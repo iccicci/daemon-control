@@ -7,13 +7,11 @@ node_js:
   - "4.0"
   - "0.12"
   - "0.11"
+  - "0.10"
 
 addons:
   code_climate:
     repo_token: 3cdde9b8d06b7f0be9658c00e71e16218cf21279c007806f111e6add1956b450
-
-before_script:
-  - node sleep.js
 
 after_script:
   - npm install codeclimate-test-reporter
