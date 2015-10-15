@@ -9,6 +9,11 @@ function DaemonControl(daemon, filename, options, timeout) {
 		return new DaemonControl(daemon, filename, options, timeout);
 
 	EventEmitter.call(this);
+
+	this.daemon   = daemon;
+	this.filename = filename;
+	this.options  = options || {};
+	this.timeout  = timeout || 5000;
 }
 
 util.inherits(DaemonControl, EventEmitter);
