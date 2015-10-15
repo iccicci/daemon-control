@@ -11,7 +11,7 @@ node_js:
 
 addons:
   code_climate:
-    repo_token: b96c8e14d13e6e0eac109776042700ebba5cddd019d9031fc476d8110842920f
+    repo_token: 3cdde9b8d06b7f0be9658c00e71e16218cf21279c007806f111e6add1956b450
 
 before_script:
   - node sleep.js
