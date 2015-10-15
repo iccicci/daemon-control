@@ -62,7 +62,7 @@ DaemonControl.prototype._doAll = function() {
 	console.log("cmdline: " + cmd);
 
 	if(! cmd) {
-		if(this.listenerCount("syntax"))
+		if(this.listeners("syntax").length)
 			return this.emit("syntax");
 
 		return this._write("Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help} [...]\n");
