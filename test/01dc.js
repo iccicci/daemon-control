@@ -10,6 +10,8 @@ describe("dc", function() {
 	describe("new", function() {
 		before(function(done) {
 			this.dc = new dc(function() {}, "test");
+			this.dc._write("");
+			this.dc._write = function() {};
 			done();
 		});
 
@@ -25,6 +27,7 @@ describe("dc", function() {
 	describe("without new", function() {
 		before(function(done) {
 			this.dc = dc(function() {}, "test");
+			this.dc._write = function() {};
 			done();
 		});
 

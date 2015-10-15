@@ -23,6 +23,9 @@ function _dc(done, daemon, filename, options, timeout) {
 	ret.on("rotated", function(filename) { ret.ev.rotated.push(filename); });
 	ret.once("error", function(err) { ret.ev.err = err; done(); });
 
+	ret.stdout = "";
+	ret._write = function(msg) { ret.stdout += msg; };
+
 	return ret;
 }
 

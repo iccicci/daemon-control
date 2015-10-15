@@ -1,7 +1,10 @@
+/*jslint evil: true */
 "use strict";
 
 var child_process = require("child_process");
 var EventEmitter  = require("events");
+var fs            = require("fs");
+var path          = require("path");
 var util          = require("util");
 
 function DaemonControl(daemon, filename, options, timeout) {
@@ -22,7 +25,22 @@ util.inherits(DaemonControl, EventEmitter);
 
 module.exports = DaemonControl;
 
+var commands = {
+	start:   null,
+	stop:    null,
+	restart: null,
+	status:  null,
+	help:    null
+};
+
 DaemonControl.prototype._cmdline = function() {
+	if(process.argv.length < 3)
+		return false;
+
+	if(process.argv[2] in commands)
+		return process.argv[2];
+
+	return false;
 };
 
 DaemonControl.prototype._doAll = function() {
@@ -36,7 +54,28 @@ DaemonControl.prototype._doAll = function() {
 	if(process.env.__daemon_control)
 		return this.daemon();
 
-	this._cmdline();
+	var cmd = this._cmdline();
+
+	if(! cmd) {
+		if(this.listenerCount("syntax"))
+			return this.emit("syntax");
+
+		return this._write("Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help} [...]\n");
+	}
+
+	eval("this._" + cmd + "();");
+};
+
+DaemonControl.prototype._help = function() {
+	if(this.listenerCount("help"))
+		return this.emit("help");
+
+	this._write("Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help} [...]\n\n");
+	this._write("help      prints this screen\n");
+	this._write("status    checks id daemon is running\n");
+	this._write("start     launches the daemon\n");
+	this._write("stop      stops the daemon\n");
+	this._write("restart   stops than starts the daemon\n");
 };
 
 DaemonControl.prototype._init = function() {
@@ -87,6 +126,32 @@ DaemonControl.prototype._init = function() {
 
 	if(! ("detached" in this.options))
 		this.options.detached = true;
+};
+
+DaemonControl.prototype._status = function(callback) {
+	var self = this;
+	var done = function(pid) {
+		if(callback)
+			return callback(pid);
+
+		if(! pid)
+			return self._write("Daemon is not running\n");
+
+		self._write("Daemon is running with pid: " + pid + "\n");
+	};
+
+	fs.readFile(this.filename, function(err, data) {
+		if(err && err.code != "ENOENT")
+			return self.emit("error", err);
+
+		if(err)
+			done(false);
+
+	});
+};
+
+DaemonControl.prototype._write = function(msg) {
+	process.stdout.write(msg);
 };
 /*
 function daemon(options) {
