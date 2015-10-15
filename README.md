@@ -22,8 +22,6 @@ function daemon() {
 }
 
 dc(daemon, 'daemon.pid');
-
-// this code is executed in control script only
 ```
 
 ```
@@ -153,8 +151,8 @@ If the __options__ _Object_ (or some one of its _properties_) is not specified, 
 
 #### timeout {Integer}
 
-The timeout (in ms) before sending __SIGKILL__ to __daemon__, if __SIGTERM__ is not enough to stop it.
-If not specified, 5000 ms is the default value.
+The timeout (in seconds) before sending __SIGKILL__ to __daemon__, if __SIGTERM__ is not enough to stop it.
+If not specified, 5 seconds is the default value.
 
 ### Command line parameters
 
@@ -276,5 +274,5 @@ Do not hesitate to report any bug or inconsistency @[github](https://github.com/
 
 ### ChangeLog
 
-* 2015-10-15 - v0.0.0
+* 2015-10-15 - v0.0.1
   * Embryonal stage
