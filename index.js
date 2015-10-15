@@ -4,20 +4,22 @@ var child_process = require("child_process");
 var EventEmitter  = require("events");
 var util          = require("util");
 
-function DaemonControl() {
+function DaemonControl(daemon, filename, options, timeout) {
+	if(! (this instanceof DaemonControl))
+		return new DaemonControl(daemon, filename, options, timeout);
+
 	EventEmitter.call(this);
 }
 
 util.inherits(DaemonControl, EventEmitter);
 
+module.exports = DaemonControl;
+
+/*
 function daemon(options) {
 
 }
 
-module.exports = {
-	control: new DaemonControl(),
-	daemon:  daemon
-};
 
 console.log(process.argv);
 
@@ -30,3 +32,4 @@ child.on("error", function(err) {
 });
 child.unref();
 console.log(typeof true);
+*/
