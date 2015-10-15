@@ -131,13 +131,18 @@ DaemonControl.prototype._init = function() {
 DaemonControl.prototype._status = function(callback) {
 	var self = this;
 	var done = function(pid) {
-		if(callback)
-			return callback(pid);
-
 		if(! pid)
-			return self._write("Daemon is not running\n");
+			self._write("Daemon is not running\n");
+		else
+			self._write("Daemon is running with pid: " + pid + "\n");
 
-		self._write("Daemon is running with pid: " + pid + "\n");
+		var num = self.listeners("status").length;
+
+		if(num > 1)
+			return self.emit("error", new Error("DaemonControl: more than one listener bount to 'status' event."));
+
+		if(callback)
+			callback(pid);
 	};
 
 	fs.readFile(this.filename, function(err, data) {
@@ -145,8 +150,17 @@ DaemonControl.prototype._status = function(callback) {
 			return self.emit("error", err);
 
 		if(err)
-			done(false);
+			return done(null);
 
+		var pid = parseInt(data);
+
+		if(isNaN(pid))
+			return done(null);
+
+		try { process.kill(pid, 0); }
+		catch(e) { return done(null); }
+
+		done(pid);
 	});
 };
 

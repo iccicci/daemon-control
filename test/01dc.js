@@ -129,4 +129,28 @@ describe("dc", function() {
 			assert.equal(this.dc.ev.err.message, "DaemonControl: env option is not an object");
 		});
 	});
+
+	describe("wrong pidfile", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, function() {}, "test");
+			process.argv = ["test", "test", "status"];
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.code, "EISDIR");
+		});
+	});
+
+	describe("too may 'status' listeners", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, function() {}, "test.pid");
+			this.dc.on("status", function() {});
+			this.dc.on("status", function() {});
+			process.argv = ["test", "test", "status"];
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.message, "DaemonControl: more than one listener bount to 'status' event.");
+		});
+	});
 });

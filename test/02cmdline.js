@@ -3,6 +3,7 @@
 
 var assert   = require("assert");
 var dc       = require("..");
+var fs       = require("fs");
 var helper   = require("./helper");
 var events   = require("events");
 
@@ -69,13 +70,65 @@ describe("cmdline", function() {
 
 	describe("status (missing pidfile)", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "daemon.pid");
-			process.argv = ["test", "test", "status"];
-			process.nextTick(process.nextTick.bind(null, done));
+			var self = this;
+
+			fs.unlink("daemon.pid", function() {
+				self.dc = helper.dc(done, function() {}, "daemon.pid");
+				process.argv = ["test", "test", "status"];
+				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
+			});
 		});
 
 		it("output", function() {
 			assert.equal(this.dc.stdout, "Daemon is not running\n");
+		});
+	});
+
+	describe("status (bad pidfile content)", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.writeFile("daemon.pid", "test", function() {
+				self.dc = helper.dc(done, function() {}, "daemon.pid");
+				process.argv = ["test", "test", "status"];
+				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is not running\n");
+		});
+	});
+
+	describe("status (bad pid in pidfile)", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.writeFile("daemon.pid", "1000000000", function() {
+				self.dc = helper.dc(done, function() {}, "daemon.pid");
+				process.argv = ["test", "test", "status"];
+				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is not running\n");
+		});
+	});
+
+	describe("status (running)", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.writeFile("daemon.pid", process.pid, function() {
+				self.dc = helper.dc(done, function() {}, "daemon.pid");
+				process.argv = ["test", "test", "status"];
+				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout.substr(0, 28), "Daemon is running with pid: ");
 		});
 	});
 });

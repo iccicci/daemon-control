@@ -92,38 +92,38 @@ Emitted after __daemon__ is stopped.
 
 #### Event: 'status'
 
-* verbose: {Boolean} __true__ if __status__ is requested from _command line_, __false__ if a status check is perfomed
-due a __start__, __stop__ or __restart__ reqest from _command line_.
 * pid: {Integer} the _pid_ of the __deamon__ or __null__ if __daemon__ is not running.
 * done: {Function}: the function to call to inform __DaemonControl__ object about custom checks or __null__ if
 __daemon__ is not running.
 
 Emitted when a __status__ check is performed. This event can be used both to customize _status message_ and to perform
-custom check on __daemon__ status. If an handler is bound to this event it must:
+custom check on __daemon__ status. If a listener is bound to this event it must:
 
 1. if __verbose__ is __true__, print a custom _status message_ on console
 2. if __done__ is not __null__, call it with a _Boolean_ __true__ parameter (or __false__ if accordingly with custom
 checks the __daemon__ is not running)
 
-__Note:__ if an handler is bound to this event, the default _satus message_ is not printed to console.
+__Note:__ if a listener is bound to this event, the default _satus message_ is not printed to console.
+
+__Note:__ only a listener is admitted for this event.
 
 #### Event: 'help'
 
 Emitted when __help__ is requested from command line.
 
-__Note:__ if an handler is bound to this event, the default _help message_ is not printed to console.
+__Note:__ if a listener is bound to this event, the default _help message_ is not printed to console.
 
 #### Event: 'syntax'
 
 Emitted when there is _syntax error_ in command line.
 
-__Note:__ if an handler is bound to this event, the default _syntax error message_ is not printed to console.
+__Note:__ if a listener is bound to this event, the default _syntax error message_ is not printed to console.
 
 #### Event: 'running'
 
 Emitted when __start__ is requested from command line and the __daemon__ is already running.
 
-__Note:__ if an handler is bound to this event, the default _already running message_ is not printed to console.
+__Note:__ if a listener is bound to this event, the default _already running message_ is not printed to console.
 
 ### [new] DaemonControl(daemon, filename[, options][, timeout])
 
