@@ -45,9 +45,7 @@ DaemonControl.prototype._cmdline = function() {
 
 DaemonControl.prototype._doAll = function() {
 	try {
-		console.log("before init");
 		this._init();
-		console.log("after init");
 	}
 	catch(e) {
 		return this.emit("error", e);
@@ -56,10 +54,7 @@ DaemonControl.prototype._doAll = function() {
 	if(process.env.__daemon_control)
 		return this.daemon();
 
-	console.log("before cmdline");
-
 	var cmd = this._cmdline();
-	console.log("cmdline: " + cmd);
 
 	if(! cmd) {
 		if(this.listeners("syntax").length)
@@ -67,14 +62,12 @@ DaemonControl.prototype._doAll = function() {
 
 		return this._write("Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help} [...]\n");
 	}
-	console.log("cmdline: " + cmd);
 
 	eval("this._" + cmd + "();");
-	console.log("cmdline: " + cmd);
 };
 
 DaemonControl.prototype._help = function() {
-	if(this.listenerCount("help"))
+	if(this.listeners("help").length)
 		return this.emit("help");
 
 	this._write("Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help} [...]\n\n");
