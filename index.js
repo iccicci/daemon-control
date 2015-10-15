@@ -14,12 +14,29 @@ function DaemonControl(daemon, filename, options, timeout) {
 	this.filename = filename;
 	this.options  = options || {};
 	this.timeout  = timeout || 5000;
+
+	process.nextTick(this._doAll.bind(this));
 }
 
 util.inherits(DaemonControl, EventEmitter);
 
 module.exports = DaemonControl;
 
+DaemonControl.prototype._doAll = function() {
+	try {
+		this._init();
+	}
+	catch(e) {
+		return this.emit("error", e);
+	}
+};
+
+DaemonControl.prototype._init = function() {
+	if(! this.daemon)
+		throw new Error("DaemonControl: missing daemon parameter");
+	if("function" != typeof this.daemon)
+		throw new Error("DaemonControl: daemon parameter is not a function");
+};
 /*
 function daemon(options) {
 

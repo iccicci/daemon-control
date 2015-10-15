@@ -276,5 +276,5 @@ Do not hesitate to report any bug or inconsistency @[github](https://github.com/
 
 ### ChangeLog
 
-* 2015-??-?? - v0.0.0
+* 2015-10-15 - v0.0.0
   * Embryonal stage
