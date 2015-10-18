@@ -1,6 +1,6 @@
 {
   "name": "daemon-control",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Daemon control script with pidfile management utility",
   "scripts": {
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test",
@@ -22,8 +22,7 @@
   "author": "Daniele Ricci <daniele.icc@gmail.com> (https://github.com/iccicci)",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "istanbul": "0.4.0",
     "jshint": "2.8.0",
