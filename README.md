@@ -300,7 +300,8 @@ compatibility. The package it tested under following versions:
 * 4.0
 * 0.12
 * 0.11
-* 0.10
+
+__Note:__ required __Node.js 0.11__.
 
 __Note:__ tested only under __UNIX__.
 
