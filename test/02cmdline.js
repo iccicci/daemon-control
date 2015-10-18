@@ -131,4 +131,46 @@ describe("cmdline", function() {
 			assert.equal(this.dc.stdout.substr(0, 28), "Daemon is running with pid: ");
 		});
 	});
+
+	describe("status listener (wrong pid)", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.writeFile("daemon.pid", 1000000000, function() {
+				self.dc = helper.dc(done, function() {}, "daemon.pid");
+				self.dc.on("status", function(pid, done2) {
+					self.done = done2;
+					done();
+				});
+				process.argv = ["test", "test", "status"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "");
+		});
+
+		it("done", function() {
+			assert.equal(this.dc.done, null);
+		});
+	});
+
+	xdescribe("status listener (running)", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.writeFile("daemon.pid", 1000000000, function() {
+				self.dc = helper.dc(done, function() {}, "daemon.pid");
+				self.dc.on("status", function(pid, done2) {
+					done();
+					done2();
+				});
+				process.argv = ["test", "test", "status"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "");
+		});
+	});
 });

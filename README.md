@@ -8,27 +8,25 @@
 [![dependency status](https://david-dm.org/iccicci/daemon-control.svg)](https://david-dm.org/iccicci/daemon-control#info=dependencies)
 [![dev dependency status](https://david-dm.org/iccicci/daemon-control/dev-status.svg)](https://david-dm.org/iccicci/daemon-control#info=devDependencies)
 
-[![NPM](https://nodei.co/npm/daemon-control.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/daemon-control/)
+This package offers an easy and quick to use tool to manage the _control script_ for a __daemon__ as
+well a lot of ways to deeply configure _control script_ behaviour for each step.
 
 ### Usage
 
 ```javascript
 var dc = require('daemon-control');
 
-// this code is executed both in daemon and control script
-
 function daemon() {
-    // this code is executed in daemon only
 }
 
 dc(daemon, 'daemon.pid');
 ```
 
 ```
-$ node daemon.js {start|stop|restart|status|help} [...]
+$ node daemon.js {start|stop|restart|status|help[|reload]} [...]
 ```
 
-### Installation
+# Installation
 
 With [npm](https://www.npmjs.com/package/daemon-control):
 ```sh
@@ -37,18 +35,19 @@ npm install daemon-control
 
 # Under development
 
-This package is currently under development and __it does not__ what this readme says.
+This package is currently under development and __it does not__ what this README says.
 
 # API
 
 ```javascript
 require('daemon-control');
 ```
-Returns __DaemonControl__ constructor.
+Returns __DaemonControl__ _constructor_.
 
 ## Class: DaemonControl
 
 Extends [events.EventEmitter](https://nodejs.org/api/events.html#events_class_events_eventemitter).
+It manages the steps to control the __daemon__.
 
 ### Events
 
@@ -60,75 +59,10 @@ __Note:__ Events are emitted only on _control scrip_.
 
 Emitted when an error occurr.
 
-#### Event: 'start'
+### [new] DaemonControl(daemon, filename[, options])
 
-* options: {Object} the __options__ _Object_ was passed to the constructor, plus default values.
-* done: {Function}: the function to call to inform __DaemonControl__ to proceed with __daemon__ launch attempt.
-
-Emitted before __daemon__ launch attempt. This is the latest occasion to customize the __options__ _Object_ if this is
-required.
-
-#### Event: 'started'
-
-* child_process: {Object} the [ChildProcess](https://nodejs.org/api/child_process.html#child_process_class_childprocess)
-object returned by
-[child_process.spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
-
-Emitted after __daemon__ launch attempt. This is emitted reguardless if __daemon__ was started correctly or not in order
-to give access to the [ChildProcess](https://nodejs.org/api/child_process.html#child_process_class_childprocess) object.
-
-#### Event: 'term'
-
-Emitted before sending __SIGTERM__ to __daemon__.
-
-#### Event: 'kill'
-
-Emitted before sending __SIGKILL__ to __daemon__.
-This event is not emitted if __SIGTERM__ was enough to stop the __daemon__.
-
-#### Event: 'stop'
-
-Emitted after __daemon__ is stopped.
-
-#### Event: 'status'
-
-* pid: {Integer} the _pid_ of the __deamon__ or __null__ if __daemon__ is not running.
-* done: {Function}: the function to call to inform __DaemonControl__ object about custom checks or __null__ if
-__daemon__ is not running.
-
-Emitted when a __status__ check is performed. This event can be used both to customize _status message_ and to perform
-custom check on __daemon__ status. If a listener is bound to this event it must:
-
-1. if __verbose__ is __true__, print a custom _status message_ on console
-2. if __done__ is not __null__, call it with a _Boolean_ __true__ parameter (or __false__ if accordingly with custom
-checks the __daemon__ is not running)
-
-__Note:__ if a listener is bound to this event, the default _satus message_ is not printed to console.
-
-__Note:__ only a listener is admitted for this event.
-
-#### Event: 'help'
-
-Emitted when __help__ is requested from command line.
-
-__Note:__ if a listener is bound to this event, the default _help message_ is not printed to console.
-
-#### Event: 'syntax'
-
-Emitted when there is _syntax error_ in command line.
-
-__Note:__ if a listener is bound to this event, the default _syntax error message_ is not printed to console.
-
-#### Event: 'running'
-
-Emitted when __start__ is requested from command line and the __daemon__ is already running.
-
-__Note:__ if a listener is bound to this event, the default _already running message_ is not printed to console.
-
-### [new] DaemonControl(daemon, filename[, options][, timeout])
-
-Returns a new __DaemonControl__ to control the daemon, parses _command line arguments_ and try to act
-as requested by _command line_.
+Returns a new __DaemonControl__ to control the daemon, parses _command line arguments_ and try to act as requested
+by _command line_.
 
 #### daemon {Function}
 
@@ -136,131 +70,237 @@ The daemon entry point.
 
 #### filename {String}
 
-The path to the _pidfile_.
+The path of the _pidfile_.
 
 #### options {Object}
 
-Options are proxied to
+* cwd: {String} (default: __process.cwd__) Proxied to __child_process.spawn__.
+* detached: {Boolean} (default: __true__) Proxied to __child_process.spawn__.
+* env: {Object} (default: __process.env__) Proxied to __child_process.spawn__.
+* hooks: {Object} (default: __null__) Defines _hooks_ for each step of _control script_.
+* reload: {Boolean} (default: __false__) Specifies if __reload__ parameter is enabled or not.
+* timeout: {Integer} (default: __5__) Specifies __SIGKILL__ timeout.
+* stdio: {Array|String} (default: __'ignore'__) Proxied to __child_process.spawn__.
+
+If any other __option__ is present, it is proxied to
 [child_process.spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
-If the __options__ _Object_ (or some one of its _properties_) is not specified, following default values are used:
 
-* cwd: __process.cwd__
-* env: __process.env__
-* stdio: __'ignore'__
-* detached: __true__
+##### hooks:
 
-#### timeout {Integer}
+If not specified _control script_ acts with its default behaviour. Can be used to customized one or more steps.
+Each _hook_ is a _Function_ which accept a __done__ _Function_ as first parameter which must be called at the
+end of the customized _hook_.
+
+_Functions_ __done__ accept a _Boolean_ __verbose__ parameter as first parameter, if set to __true__ default
+messages are printed to console, otherwise the _hook_ can print custom messages to console and call __done__
+with __verbose__ parameter set to __false__.
+
+##### reload:
+
+If __true__ the __reload__ _command line parameter_ will be enabled. This means the __deamon__ must be aware it
+can receive a __SIGHUP__.
+
+##### timeout:
 
 The timeout (in seconds) before sending __SIGKILL__ to __daemon__, if __SIGTERM__ is not enough to stop it.
-If not specified, 5 seconds is the default value.
 
-### Command line parameters
+### Hooks
+
+#### syntax(done)
+
+* done(verbose): {Function}
+
+Called when there is _syntax error_ in _command line_.
+
+#### help(done)
+
+* done(verbose): {Function}
+
+Called when __help__ is requested from _command line_.
+
+#### status(done, pid)
+
+* done(verbose, pid): {Function}
+* pid: {Integer} the __pid__ of the __deamon__ or __null__ if __daemon__ is not running.
+
+Called when a __status__ check is performed. Can be used to perform deeper checks on __daemon__ to discover
+if it is running correctly. If accordingly to these checks the __daemon__ is not running, __done__ must be
+called with __pid__ parameter set to __null__, otherwise with the value passed to the _hook_.
+
+#### term(done)
+
+* done(verbose): {Function}
+
+Called before sending __SIGTERM__ to __daemon__.
+
+#### kill(done)
+
+* done(verbose): {Function}
+
+Called before sending __SIGKILL__ to __daemon__.
+This _method_ is not called if __SIGTERM__ was enough to stop the __daemon__.
+
+#### stop(done)
+
+* done(verbose): {Function}
+
+Called after __daemon__ is stopped.
+
+#### starting(done, options)
+
+* done(verbose, options): {Function}
+* options: {Object} the __options__ _Object_ prepared to call
+[child_process.spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
+
+Called before __daemon__ launch attempt. This is the latest occasion to customize the __options__ _Object_ (if this is
+required) before passing it to __done__ _Function_.
+
+#### start(done, child)
+
+* done(verbose): {Function}
+* child: {Object} the [ChildProcess](https://nodejs.org/api/child_process.html#child_process_class_childprocess)
+_Object_ returned by
+[child_process.spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
+
+Called after __daemon__ launch attempt. This is called reguardless if __daemon__ was started correctly or not in order
+to give access to the [ChildProcess](https://nodejs.org/api/child_process.html#child_process_class_childprocess)
+_Object_.
+
+#### running(done, pid)
+
+* done(verbose): {Function}
+* pid: {Integer} the __pid__ of the __deamon__.
+
+Called when __start__ is requested from command line and the __daemon__ is already running.
+
+#### reload(done, pid)
+
+* done(verbose): {Function}
+* pid: {Integer} the __pid__ of the __deamon__ or __null__ if __daemon__ is not running.
+
+Called before sending __SIGHUP__ to __daemon__. If Pid is __null__ this _hook_ has just to print an error message to
+console.
+
+## Command line parameters
 
 ```
-$ node daemon.js {start|stop|restart|status|help} [...]
+$ node daemon.js {start|stop|restart|status|help[|reload]} [...]
 ```
 
 The first parameter is consumed by _control script_, from second one to last one (if present) they are passed to the
 __daemon__.
 
-#### status
+### status
 
 The package checks for the _pidfile_, if it exists its content is read and if it is an _Integer_ the package checks for
 process with that _pid_; if this process exists the __daemon__ is running.
 
-#### start
+### start
 
-A __status__ command is executed, if the __daemon__ is not running the pakage tries to lauch it.
+A __status__ check is performet, if the __daemon__ is not running the pakage tries to lauch it.
 
-#### stop
+### stop
 
-A __status__ command is executed, if the __daemon__ is running the pakage tries to stop it.
+A __status__ check is performed, if the __daemon__ is running the pakage tries to stop it.
 
-#### restart
+### restart
 
-A __status__ command is executed, if the __daemon__ is running the pakage tries to stop it.
+A __status__ check is performed, if the __daemon__ is running the pakage tries to stop it.
 Once this process is completed, the package tries to launch the __daemon__.
 
-#### help
+### help
 
 The _help message_ is printed to console.
 
-### Example
+### reload
+
+A __status__ check is performed, if the __daemon__ is running the pakage send it a __SIGHUP__.
+If __reload option__ was __false__ when _constructor_ was called, this command is not enabled and it cause a
+_syntax error_.
+
+## Complex example
 
 ```javascript
 var dc = require('daemon-control');
 var fs = require('fs');
 
+function checks() {
+  // performs custm checks and returns checks result
+}
+
+var recover;
+
+function status(done, pid) {
+  if(! pid) {
+    console.log('Daemon is not running');
+
+    return done(false);
+  }
+
+  if(checks()) {
+    console.log('Daemon is running with pid: ' + pid);
+
+    return done(false, pid);
+  }
+
+  recover = true;
+  console.log('Daemon is not running');
+  done(false);
+});
+
+function kill(done) {
+  // a SIGKILL was required, let's do recovery procedure
+  recover = true;
+  done(true);
+});
+
+function starting(done, options) {
+  if(recover) {
+    // let's set this to instruct daemon to run recovery procedure
+    options.env.recover = true;
+    // let's add a pipe for recovery procedure output
+    options.stdio = ['ignore', 'ignore', 'ignore', 'pipe'];
+  }
+
+  done(true, options);
+});
+
+function start(done, child) {
+  if(child.pid && recover)
+    // let's print recovery procedure output to console
+    child.stdio[3].pipe(process.stdout);
+
+  done(true);
+});
+
 function daemon() {
   if(process.env.recover) {
-    var out = fs.createWriteStream(3); // the pipe we added
+     // the pipe we added in starting hook
+    var out = fs.createWriteStream(3);
 
-    out.write("Recovering...");
+    out.write("Recovering...\n");
     // perform recovery procedure
-    out.end("Recovered");
+    out.end("Recovered\n");
   }
 
   // do daemon stuff
 }
 
-function checks() {
-  // perform custm checks
-}
-
-var controller = dc(daemon, 'daemon.pid');
-var recover;
-
-controller.on('status', function(verbose, pid, done) {
-  if(! pid) {
-    if(verbose)
-      console.log('daemon is not running');
-
-    return;
-  }
-
-  if(checks())
-    return done(true);
-
-  recover = true;
-  done(false);
-});
-
-controller.on('kill', function() {
-  // a SIGKILL was required, let's do recovery procedure
-  recover = true;
-});
-
-controller.on('start', function(options, done) {
-  if(recover) {
-    options.env.recover = true;
-    options.stdio = ['ignore', 'ignore', 'ignore', 'pipe'];
-  }
-
-  done();
-});
-
-controller.on('started', function(cp) {
-  if(! cp.pid)
-    return;
-
-  cp.stdio[3].pipe(process.stdout);
-});
-
-controller.on('error', function(err) {
-  console.log(err);
+dc(daemon, 'daemon.pid').on('error', function(err) {
+  throw err;
 });
 ```
 
 ### Compatibility
 
-This package is written following  __Node.js 4.1__ specifications always taking care about backward
+This package is written following  __Node.js 4.2__ specifications always taking care about backward
 compatibility. The package it tested under following versions:
+* 4.2
 * 4.1
 * 4.0
 * 0.12
 * 0.11
-
-__Note:__ required __Node.js 0.11__.
+* 0.10
 
 __Note:__ tested only under __UNIX__.
 
@@ -274,5 +314,7 @@ Do not hesitate to report any bug or inconsistency @[github](https://github.com/
 
 ### ChangeLog
 
+* 2015-10-18 - v0.0.2
+  * Design pattern refactory
 * 2015-10-15 - v0.0.1
   * Embryonal stage

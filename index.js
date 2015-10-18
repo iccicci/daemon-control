@@ -5,7 +5,6 @@ var child_process = require("child_process");
 var EventEmitter  = require("events");
 var fs            = require("fs");
 var path          = require("path");
-var util          = require("util");
 
 function DaemonControl(daemon, filename, options, timeout) {
 	if(! (this instanceof DaemonControl))
@@ -21,7 +20,7 @@ function DaemonControl(daemon, filename, options, timeout) {
 	process.nextTick(this._doAll.bind(this));
 }
 
-util.inherits(DaemonControl, EventEmitter);
+DaemonControl.prototype = new EventEmitter();
 
 module.exports = DaemonControl;
 
@@ -131,18 +130,28 @@ DaemonControl.prototype._init = function() {
 DaemonControl.prototype._status = function(callback) {
 	var self = this;
 	var done = function(pid) {
-		if(! pid)
-			self._write("Daemon is not running\n");
-		else
-			self._write("Daemon is running with pid: " + pid + "\n");
-
 		var num = self.listeners("status").length;
 
 		if(num > 1)
 			return self.emit("error", new Error("DaemonControl: more than one listener bount to 'status' event."));
 
-		if(callback)
-			callback(pid);
+		done = function(running) {
+			if(! running)
+				pid = null;
+
+			if(callback)
+				callback(pid);
+		};
+
+		if(num)
+			return self.emit("status", pid, done);
+
+		if(! pid)
+			self._write("Daemon is not running\n");
+		else
+			self._write("Daemon is running with pid: " + pid + "\n");
+
+		done(true);
 	};
 
 	fs.readFile(this.filename, function(err, data) {
