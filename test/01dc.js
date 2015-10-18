@@ -42,11 +42,17 @@ describe("dc", function() {
 
 	describe("missing daemon", function() {
 		before(function(done) {
-			this.dc = helper.dc(done);
+			var self = this;
+
+			this.dc = dc();
+			this.dc.on("error", function(err) {
+				self.err = err;
+				done();
+			});
 		});
 
 		it("error", function() {
-			assert.equal(this.dc.ev.err.message, "DaemonControl: missing daemon parameter");
+			assert.equal(this.err.message, "DaemonControl: missing daemon parameter");
 		});
 	});
 
@@ -62,7 +68,7 @@ describe("dc", function() {
 
 	describe("missing filename", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {});
+			this.dc = helper.dc(done, null);
 		});
 
 		it("error", function() {
@@ -72,7 +78,7 @@ describe("dc", function() {
 
 	describe("wrong filename", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, {});
+			this.dc = helper.dc(done, null, {});
 		});
 
 		it("error", function() {
@@ -82,7 +88,7 @@ describe("dc", function() {
 
 	describe("wrong options", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test", "test");
+			this.dc = helper.dc(done, null, "test", "test");
 		});
 
 		it("error", function() {
@@ -90,9 +96,39 @@ describe("dc", function() {
 		});
 	});
 
+	describe("wrong hooks", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, null, "test", { hooks: "test" });
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.message, "DaemonControl: options.hooks is not an object");
+		});
+	});
+
+	describe("wrong hook", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, null, "test", { hooks: { start: "test" }});
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.message, "DaemonControl: options.hooks.start is not a function");
+		});
+	});
+
+	describe("unknown hook", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, null, "test", { hooks: { test: null }});
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.message, "DaemonControl: unknow hook options.hooks.test");
+		});
+	});
+
 	describe("wrong timeout", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test", {}, "test");
+			this.dc = helper.dc(done, null, "test", { timeout: "test" });
 		});
 
 		it("error", function() {
@@ -102,7 +138,7 @@ describe("dc", function() {
 
 	describe("negative timeout", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test", {}, 0);
+			this.dc = helper.dc(done, null, "test", { timeout: 0 });
 		});
 
 		it("error", function() {
@@ -112,7 +148,7 @@ describe("dc", function() {
 
 	describe("wrong cwd", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test", { cwd: {} });
+			this.dc = helper.dc(done, null, "test", { cwd: {} });
 		});
 
 		it("error", function() {
@@ -122,7 +158,7 @@ describe("dc", function() {
 
 	describe("wrong env", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test", { env: true });
+			this.dc = helper.dc(done, null, "test", { env: true });
 		});
 
 		it("error", function() {
@@ -132,25 +168,12 @@ describe("dc", function() {
 
 	describe("wrong pidfile", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test");
+			this.dc = helper.dc(done, null, "test");
 			process.argv = ["test", "test", "status"];
 		});
 
 		it("error", function() {
 			assert.equal(this.dc.ev.err.code, "EISDIR");
-		});
-	});
-
-	describe("too may 'status' listeners", function() {
-		before(function(done) {
-			this.dc = helper.dc(done, function() {}, "test.pid");
-			this.dc.on("status", function() {});
-			this.dc.on("status", function() {});
-			process.argv = ["test", "test", "status"];
-		});
-
-		it("error", function() {
-			assert.equal(this.dc.ev.err.message, "DaemonControl: more than one listener bount to 'status' event.");
 		});
 	});
 });

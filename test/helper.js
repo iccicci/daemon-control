@@ -16,7 +16,7 @@ function exec(done, cmd, cb) {
 }
 
 function _dc(done, daemon, filename, options, timeout) {
-	var ret = dc(daemon, filename, options, timeout);
+	var ret = dc(daemon || function() {}, filename, options, timeout);
 
 	ret.ev = { single: 0, multi: 0, rotation: 0, rotated: [] };
 	ret.on("rotation", function() { ret.ev.rotation++; });
