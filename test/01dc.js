@@ -169,7 +169,7 @@ describe("dc", function() {
 	describe("wrong pidfile", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test");
-			process.argv = ["test", "test", "status"];
+			process.argv = [process.argv[0], "test", "status"];
 		});
 
 		it("error", function() {

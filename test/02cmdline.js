@@ -11,7 +11,7 @@ describe("cmdline", function() {
 	describe("missing parameter", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test");
-			process.argv = ["test", "test"];
+			process.argv = [process.argv[0], "test"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
 
@@ -23,7 +23,7 @@ describe("cmdline", function() {
 	describe("wrong parameter", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test");
-			process.argv = ["test", "test", "test"];
+			process.argv = [process.argv[0], "test", "test"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
 
@@ -35,7 +35,7 @@ describe("cmdline", function() {
 	describe("reload parameter without reload option", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test");
-			process.argv = ["test", "test", "reload"];
+			process.argv = [process.argv[0], "test", "reload"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
 
@@ -47,7 +47,7 @@ describe("cmdline", function() {
 	describe("syntax hook", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test", { syntax: function(cb) { cb(false); done(); } });
-			process.argv = ["test", "test"];
+			process.argv = [process.argv[0], "test"];
 		});
 
 		it("output", function() {
@@ -58,7 +58,7 @@ describe("cmdline", function() {
 	describe("wrong parameter (with reload)", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test", { reload: true });
-			process.argv = ["test", "test", "test"];
+			process.argv = [process.argv[0], "test", "test"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
 
@@ -70,7 +70,7 @@ describe("cmdline", function() {
 	describe("help", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test");
-			process.argv = ["test", "test", "help"];
+			process.argv = [process.argv[0], "test", "help"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
 
@@ -82,7 +82,7 @@ describe("cmdline", function() {
 	describe("help (with reload)", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test", { reload: true });
-			process.argv = ["test", "test", "help"];
+			process.argv = [process.argv[0], "test", "help"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
 
@@ -94,7 +94,7 @@ describe("cmdline", function() {
 	describe("help hook", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, null, "test", { hooks: { help: function(cb) { cb(false); done(); } }});
-			process.argv = ["test", "test", "help"];
+			process.argv = [process.argv[0], "test", "help"];
 		});
 
 		it("output", function() {
@@ -108,7 +108,7 @@ describe("cmdline", function() {
 
 			fs.unlink("daemon.pid", function() {
 				self.dc = helper.dc(done, null, "daemon.pid");
-				process.argv = ["test", "test", "status"];
+				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
 		});
@@ -124,7 +124,7 @@ describe("cmdline", function() {
 
 			fs.writeFile("daemon.pid", "test", function() {
 				self.dc = helper.dc(done, null, "daemon.pid");
-				process.argv = ["test", "test", "status"];
+				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
 		});
@@ -140,7 +140,7 @@ describe("cmdline", function() {
 
 			fs.writeFile("daemon.pid", "1000000000", function() {
 				self.dc = helper.dc(done, null, "daemon.pid");
-				process.argv = ["test", "test", "status"];
+				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
 		});
@@ -156,7 +156,7 @@ describe("cmdline", function() {
 
 			fs.writeFile("daemon.pid", process.pid, function() {
 				self.dc = helper.dc(done, null, "daemon.pid");
-				process.argv = ["test", "test", "status"];
+				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
 		});
@@ -172,7 +172,7 @@ describe("cmdline", function() {
 
 			fs.writeFile("daemon.pid", 1000000000, function() {
 				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { status: function(cb, pid) { cb(false); done(); }}});
-				process.argv = ["test", "test", "status"];
+				process.argv = [process.argv[0], "test", "status"];
 			});
 		});
 
@@ -187,7 +187,7 @@ describe("cmdline", function() {
 
 			fs.writeFile("daemon.pid", process.pid, function() {
 				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { status: function(cb, pid) { self.pid = pid; cb(false, pid); done(); }}});
-				process.argv = ["test", "test", "status"];
+				process.argv = [process.argv[0], "test", "status"];
 			});
 		});
 
@@ -207,7 +207,7 @@ describe("cmdline", function() {
 			fs.writeFile("daemon.pid", process.pid, function() {
 				self.dc = helper.dc(done, null, "daemon.pid");
 				self.dc.stdout = [];
-				process.argv = ["test", "test", "start"];
+				process.argv = [process.argv[0], "test", "start"];
 				self.dc._write = function(msg) {
 					self.dc.stdout.push(msg);
 
@@ -232,7 +232,7 @@ describe("cmdline", function() {
 
 			fs.writeFile("daemon.pid", process.pid, function() {
 				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { running: function(cb, pid) { self.pid = pid; cb(false); done(); }}});
-				process.argv = ["test", "test", "start"];
+				process.argv = [process.argv[0], "test", "start"];
 			});
 		});
 
@@ -252,7 +252,7 @@ describe("cmdline", function() {
 			fs.unlink("daemon.pid", function() {
 				self.dc = helper.dc(done, null, "daemon.pid", { reload: true });
 				self.dc.stdout = [];
-				process.argv = ["test", "test", "reload"];
+				process.argv = [process.argv[0], "test", "reload"];
 				self.dc._write = function(msg) {
 					self.dc.stdout.push(msg);
 
@@ -280,7 +280,7 @@ describe("cmdline", function() {
 					cb(false);
 					done();
 				} }, reload: true });
-				process.argv = ["test", "test", "reload"];
+				process.argv = [process.argv[0], "test", "reload"];
 			});
 		});
 

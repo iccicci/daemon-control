@@ -49,14 +49,13 @@ DaemonControl.prototype._cmdline = function() {
 	if(process.argv.length < 3)
 		return false;
 
-	if(process.argv[2] in commands) {
-		if(process.argv[2] == "reload" && ! this.reload)
-			return false;
-		else
-			return process.argv[2];
-	}
+	if(! (process.argv[2] in commands))
+		return false;
 
-	return false;
+	if(process.argv[2] == "reload" && ! this.reload)
+		return false;
+
+	return process.argv[2];
 };
 
 DaemonControl.prototype._help = function() {
@@ -104,6 +103,8 @@ DaemonControl.prototype._init = function() {
 		this.hooks = {};
 	else {
 		this.hooks = this.options.hooks;
+		delete this.options.hooks;
+
 		if("object" != typeof this.hooks)
 			throw new Error("DaemonControl: options.hooks is not an object");
 	}
@@ -116,13 +117,14 @@ DaemonControl.prototype._init = function() {
 			throw new Error("DaemonControl: options.hooks." + i + " is not a function");
 	}
 
-	if(this.options.reload)
-		this.reload = true;
+	if("reload" in this.options) {
+		this.reload = this.options.reload;
+		delete this.options.reload;
+	}
 
-	if("undefined" == typeof this.options.timeout)
-		this.timeout = 5000;
-	else {
+	if("timeout" in this.options) {
 		this.timeout = parseInt(this.options.timeout);
+		delete this.options.timeout;
 
 		if(isNaN(this.timeout))
 			throw new Error("DaemonControl: timeout parameter is not an integer number");
@@ -130,6 +132,8 @@ DaemonControl.prototype._init = function() {
 		if(this.timeout <= 0)
 			throw new Error("DaemonControl: timeout parameter is not a non zero positive integer number");
 	}
+	else
+		this.timeout = 5000;
 
 	if(! ("cwd" in this.options))
 		this.options.cwd = process.cwd;
@@ -138,7 +142,7 @@ DaemonControl.prototype._init = function() {
 			throw new Error("DaemonControl: cwd option is not a string");
 
 	if(! ("env" in this.options))
-		this.options.cwd = process.env;
+		this.options.env = process.env;
 	else
 		if("object" != typeof this.options.env)
 			throw new Error("DaemonControl: env option is not an object");
@@ -185,7 +189,7 @@ DaemonControl.prototype._reload = function() {
 
 	this._status(function(pid) {
 		if(pid) {
-			throw Error("ma indove");
+			throw new Error("ma indove");
 		}
 		else {
 			done = function(verbose) {
@@ -218,7 +222,37 @@ DaemonControl.prototype._start = function(callback) {
 			done(true);
 		}
 		else {
-			throw Error("ma de che");
+			done = function(verbose, options) {
+				var argv = process.argv.slice(3);
+				var child;
+
+				done = function(verbose) {
+					if(! verbose)
+						return;
+
+					if(child.pid)
+						self._write("Daemon started with pid: " + child.pid + "\n");
+					else
+						self._write("Daemon not started\n");
+				};
+
+				if(verbose)
+					self._write("Starting daemon...\n");
+
+				argv.unshift(process.argv[1]);
+				child = child_process.spawn(process.argv[0], argv, self.options);
+				child.on("error", self.emit.bind(self, "error"));
+
+				if(self.hooks.start)
+					return self.hooks.start(done, child);
+
+				done(true);
+			};
+
+			if(self.hooks.starting)
+				return self.hooks.starting(done, self.options);
+
+			done(true, self.options);
 		}
 	});
 };
