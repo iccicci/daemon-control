@@ -32,6 +32,19 @@ var commands = {
 	reload:  null
 };
 
+var hooks = {
+	help:     null,
+	kill:     null,
+	reload:   null,
+	running:  null,
+	start:    null,
+	starting: null,
+	status:   null,
+	stop:     null,
+	syntax:   null,
+	term:     null,
+};
+
 DaemonControl.prototype._cmdline = function() {
 	if(process.argv.length < 3)
 		return false;
@@ -96,7 +109,7 @@ DaemonControl.prototype._init = function() {
 	}
 
 	for(var i in this.hooks) {
-		if(! (i in commands))
+		if(! (i in hooks))
 			throw new Error("DaemonControl: unknow hook options.hooks." + i);
 
 		if("function" != typeof this.hooks[i])
@@ -166,25 +179,71 @@ DaemonControl.prototype._main = function() {
 	eval("this._" + cmd + "();");
 };
 
+DaemonControl.prototype._reload = function() {
+	var done;
+	var self = this;
+
+	this._status(function(pid) {
+		if(pid) {
+			throw Error("ma indove");
+		}
+		else {
+			done = function(verbose) {
+				if(verbose)
+					self._write("Use start command\n");
+			};
+
+			if(self.hooks.reload)
+				return self.hooks.reload(done, pid);
+
+			done(true);
+		}
+	});
+};
+
+DaemonControl.prototype._start = function(callback) {
+	var done;
+	var self = this;
+
+	this._status(function(pid) {
+		if(pid) {
+			done = function(verbose) {
+				if(verbose)
+					self._write("Stop the daemon before starting it, or use restart command\n");
+			};
+
+			if(self.hooks.running)
+				return self.hooks.running(done, pid);
+
+			done(true);
+		}
+		else {
+			throw Error("ma de che");
+		}
+	});
+};
+
 DaemonControl.prototype._status = function(callback) {
 	var self = this;
-	var done = function(verbose, pid) {
-		done = function(verbose, pid) {
-			if(verbose) {
-				if(! pid)
-					self._write("Daemon is not running\n");
-				else
-					self._write("Daemon is running with pid: " + pid + "\n");
-			}
+	var done = function(pid) {
+		fs.unlink(self.filename, function() {
+			done = function(verbose, pid) {
+				if(verbose) {
+					if(! pid)
+						self._write("Daemon is not running\n");
+					else
+						self._write("Daemon is running with pid: " + pid + "\n");
+				}
 
-			if(callback)
-				callback(pid);
-		};
+				if(callback)
+					callback(pid);
+			};
 
-		if(self.hooks.status)
-			return self.hooks.status(done, pid);
+			if(self.hooks.status)
+				return self.hooks.status(done, pid);
 
-		done(true, pid);
+			done(true, pid);
+		});
 	};
 
 	fs.readFile(this.filename, function(err, data) {
@@ -192,17 +251,17 @@ DaemonControl.prototype._status = function(callback) {
 			return self.emit("error", err);
 
 		if(err)
-			return done(true, null);
+			return done(null);
 
 		var pid = parseInt(data);
 
 		if(isNaN(pid))
-			return done(true, null);
+			return done(null);
 
 		try { process.kill(pid, 0); }
-		catch(e) { return done(true, null); }
+		catch(e) { return done(null); }
 
-		done(true, pid);
+		done(pid);
 	});
 };
 
