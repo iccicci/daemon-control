@@ -239,8 +239,9 @@ DaemonControl.prototype._start = function(callback) {
 				if(verbose)
 					self._write("Starting daemon...\n");
 
+				options.__daemon_control = "true";
 				argv.unshift(process.argv[1]);
-				child = child_process.spawn(process.argv[0], argv, self.options);
+				child = child_process.spawn(process.argv[0], argv, options);
 				child.on("error", self.emit.bind(self, "error"));
 
 				if(self.hooks.start)

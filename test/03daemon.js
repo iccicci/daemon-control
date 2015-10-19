@@ -14,7 +14,7 @@ describe("daemon", function() {
 			var node = process.argv[0];
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(function() { process.argv[0] = node; done(); }, null, "daemon.pid");
+				self.dc = helper.dc(function() { process.argv[0] = node; done(); }, "daemon.pid");
 				process.argv = ["none", "test", "start"];
 			});
 		});

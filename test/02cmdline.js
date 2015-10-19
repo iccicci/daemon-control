@@ -10,7 +10,7 @@ var events   = require("events");
 describe("cmdline", function() {
 	describe("missing parameter", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test");
+			this.dc = helper.dc(done, "test");
 			process.argv = [process.argv[0], "test"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
@@ -22,7 +22,7 @@ describe("cmdline", function() {
 
 	describe("wrong parameter", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test");
+			this.dc = helper.dc(done, "test");
 			process.argv = [process.argv[0], "test", "test"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
@@ -34,7 +34,7 @@ describe("cmdline", function() {
 
 	describe("reload parameter without reload option", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test");
+			this.dc = helper.dc(done, "test");
 			process.argv = [process.argv[0], "test", "reload"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
@@ -46,7 +46,7 @@ describe("cmdline", function() {
 
 	describe("syntax hook", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { syntax: function(cb) { cb(false); done(); } });
+			this.dc = helper.dc(done, "test", { syntax: function(cb) { cb(false); done(); } });
 			process.argv = [process.argv[0], "test"];
 		});
 
@@ -57,7 +57,7 @@ describe("cmdline", function() {
 
 	describe("wrong parameter (with reload)", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { reload: true });
+			this.dc = helper.dc(done, "test", { reload: true });
 			process.argv = [process.argv[0], "test", "test"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
@@ -69,7 +69,7 @@ describe("cmdline", function() {
 
 	describe("help", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test");
+			this.dc = helper.dc(done, "test");
 			process.argv = [process.argv[0], "test", "help"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
@@ -81,7 +81,7 @@ describe("cmdline", function() {
 
 	describe("help (with reload)", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { reload: true });
+			this.dc = helper.dc(done, "test", { reload: true });
 			process.argv = [process.argv[0], "test", "help"];
 			process.nextTick(process.nextTick.bind(null, done));
 		});
@@ -93,7 +93,7 @@ describe("cmdline", function() {
 
 	describe("help hook", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { hooks: { help: function(cb) { cb(false); done(); } }});
+			this.dc = helper.dc(done, "test", { hooks: { help: function(cb) { cb(false); done(); } }});
 			process.argv = [process.argv[0], "test", "help"];
 		});
 
@@ -107,7 +107,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done, null, "daemon.pid");
+				self.dc = helper.dc(done, "daemon.pid");
 				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
@@ -123,7 +123,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", "test", function() {
-				self.dc = helper.dc(done, null, "daemon.pid");
+				self.dc = helper.dc(done, "daemon.pid");
 				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
@@ -139,7 +139,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", "1000000000", function() {
-				self.dc = helper.dc(done, null, "daemon.pid");
+				self.dc = helper.dc(done, "daemon.pid");
 				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
@@ -155,7 +155,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", process.pid, function() {
-				self.dc = helper.dc(done, null, "daemon.pid");
+				self.dc = helper.dc(done, "daemon.pid");
 				process.argv = [process.argv[0], "test", "status"];
 				self.dc._write = function(msg) { self.dc.stdout = msg; done(); };
 			});
@@ -171,7 +171,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", 1000000000, function() {
-				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { status: function(cb, pid) { cb(false); done(); }}});
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { status: function(cb, pid) { cb(false); done(); }}});
 				process.argv = [process.argv[0], "test", "status"];
 			});
 		});
@@ -186,7 +186,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", process.pid, function() {
-				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { status: function(cb, pid) { self.pid = pid; cb(false, pid); done(); }}});
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { status: function(cb, pid) { self.pid = pid; cb(false, pid); done(); }}});
 				process.argv = [process.argv[0], "test", "status"];
 			});
 		});
@@ -205,7 +205,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", process.pid, function() {
-				self.dc = helper.dc(done, null, "daemon.pid");
+				self.dc = helper.dc(done, "daemon.pid");
 				self.dc.stdout = [];
 				process.argv = [process.argv[0], "test", "start"];
 				self.dc._write = function(msg) {
@@ -231,7 +231,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.writeFile("daemon.pid", process.pid, function() {
-				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { running: function(cb, pid) { self.pid = pid; cb(false); done(); }}});
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { running: function(cb, pid) { self.pid = pid; cb(false); done(); }}});
 				process.argv = [process.argv[0], "test", "start"];
 			});
 		});
@@ -250,7 +250,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done, null, "daemon.pid", { reload: true });
+				self.dc = helper.dc(done, "daemon.pid", { reload: true });
 				self.dc.stdout = [];
 				process.argv = [process.argv[0], "test", "reload"];
 				self.dc._write = function(msg) {
@@ -276,7 +276,7 @@ describe("cmdline", function() {
 			var self = this;
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done, null, "daemon.pid", { hooks: { reload: function(cb, pid) {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { reload: function(cb, pid) {
 					cb(false);
 					done();
 				} }, reload: true });

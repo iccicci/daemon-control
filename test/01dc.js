@@ -58,7 +58,7 @@ describe("dc", function() {
 
 	describe("wrong daemon", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, "test");
+			this.dc = helper.dc(done, null, null, "test");
 		});
 
 		it("error", function() {
@@ -68,7 +68,7 @@ describe("dc", function() {
 
 	describe("missing filename", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null);
+			this.dc = helper.dc(done);
 		});
 
 		it("error", function() {
@@ -78,7 +78,7 @@ describe("dc", function() {
 
 	describe("wrong filename", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, {});
+			this.dc = helper.dc(done, {});
 		});
 
 		it("error", function() {
@@ -88,7 +88,7 @@ describe("dc", function() {
 
 	describe("wrong options", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", "test");
+			this.dc = helper.dc(done, "test", "test");
 		});
 
 		it("error", function() {
@@ -98,7 +98,7 @@ describe("dc", function() {
 
 	describe("wrong hooks", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { hooks: "test" });
+			this.dc = helper.dc(done, "test", { hooks: "test" });
 		});
 
 		it("error", function() {
@@ -108,7 +108,7 @@ describe("dc", function() {
 
 	describe("wrong hook", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { hooks: { start: "test" }});
+			this.dc = helper.dc(done, "test", { hooks: { start: "test" }});
 		});
 
 		it("error", function() {
@@ -118,7 +118,7 @@ describe("dc", function() {
 
 	describe("unknown hook", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { hooks: { test: null }});
+			this.dc = helper.dc(done, "test", { hooks: { test: null }});
 		});
 
 		it("error", function() {
@@ -128,7 +128,7 @@ describe("dc", function() {
 
 	describe("wrong timeout", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { timeout: "test" });
+			this.dc = helper.dc(done, "test", { timeout: "test" });
 		});
 
 		it("error", function() {
@@ -138,7 +138,7 @@ describe("dc", function() {
 
 	describe("negative timeout", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { timeout: 0 });
+			this.dc = helper.dc(done, "test", { timeout: 0 });
 		});
 
 		it("error", function() {
@@ -148,7 +148,7 @@ describe("dc", function() {
 
 	describe("wrong cwd", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { cwd: {} });
+			this.dc = helper.dc(done, "test", { cwd: {} });
 		});
 
 		it("error", function() {
@@ -158,7 +158,7 @@ describe("dc", function() {
 
 	describe("wrong env", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test", { env: true });
+			this.dc = helper.dc(done, "test", { env: true });
 		});
 
 		it("error", function() {
@@ -168,7 +168,7 @@ describe("dc", function() {
 
 	describe("wrong pidfile", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, null, "test");
+			this.dc = helper.dc(done, "test");
 			process.argv = [process.argv[0], "test", "status"];
 		});
 
