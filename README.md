@@ -286,7 +286,14 @@ function daemon() {
   // do daemon stuff
 }
 
-dc(daemon, 'daemon.pid').on('error', function(err) {
+var hooks = {
+  kill:     kill,
+  start:    start,
+  starting: starting,
+  status:   status
+};
+
+dc(daemon, 'daemon.pid', { hooks: hooks }).on('error', function(err) {
   throw err;
 });
 ```

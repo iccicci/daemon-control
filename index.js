@@ -227,6 +227,11 @@ DaemonControl.prototype._start = function(callback) {
 				var child;
 
 				done = function(verbose) {
+					fs.writeFile(self.filename, child.pid, function(err) {
+						if(err)
+							self.emit("error", err);
+					});
+
 					if(! verbose)
 						return;
 

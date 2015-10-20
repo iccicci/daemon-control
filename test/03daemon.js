@@ -27,4 +27,64 @@ describe("daemon", function() {
 			assert.equal(this.dc.stdout, "Daemon is not running\nStarting daemon...\nDaemon not started\n");
 		});
 	});
+
+	describe("start", function() {
+		var pid;
+
+		before(function(done) {
+			var self = this;
+
+			fs.unlink("daemon.pid", function() {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { start: function(cb, child) { pid = child.pid; cb(true); done(); } } });
+				process.argv = [process.argv[0], "helper.js", "start"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is not running\nStarting daemon...\nDaemon started with pid: " + pid + "\n");
+		});
+	});
+
+	describe("error writing pid file", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, "none/test.pid");
+			process.argv = [process.argv[0], "helper.js", "start"];
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.code, "ENOENT");
+		});
+	});
+
+	describe("starting hook", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.unlink("daemon.pid", function() {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { starting: function(cb, options) { cb(false, options); done(); } } });
+				process.argv = [process.argv[0], "helper.js", "start"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout.substr(0, 47), "Daemon is not running\nDaemon started with pid: ");
+		});
+	});
+
+	describe("start hook", function() {
+		var pid;
+
+		before(function(done) {
+			var self = this;
+
+			fs.unlink("daemon.pid", function() {
+				self.dc = helper.dc(done, "daemon.pid", { detached: true, hooks: { start: function(cb, child) { pid = child.pid; cb(false); done(); } } });
+				process.argv = [process.argv[0], "helper.js", "start"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is not running\nStarting daemon...\n");
+		});
+	});
 });
