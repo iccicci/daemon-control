@@ -43,6 +43,7 @@ var hooks = {
 	stop:     null,
 	syntax:   null,
 	term:     null,
+	wait:     null
 };
 
 DaemonControl.prototype._cmdline = function() {
@@ -135,7 +136,7 @@ DaemonControl.prototype._init = function() {
 			throw new Error("DaemonControl: timeout parameter is not a non zero positive integer number");
 	}
 	else
-		this.timeout = 5000;
+		this.timeout = 5;
 
 	if(! ("cwd" in this.options))
 		this.options.cwd = process.cwd();
@@ -158,6 +159,22 @@ DaemonControl.prototype._init = function() {
 
 	if(! ("detached" in this.options))
 		this.options.detached = true;
+};
+
+DaemonControl.prototype._kill = function(pid, callback) {
+	var self = this;
+	var done = function(verbose) {
+		if(verbose)
+			self._write("Sending SIGKILL to daemon.");
+
+		process.kill(pid, "SIGKILL");
+		self._wait(pid, callback, true);
+	};
+
+	if(self.hooks.kill)
+		return self.hooks.kill(done, pid);
+
+	done(true);
 };
 
 DaemonControl.prototype._main = function() {
@@ -334,7 +351,7 @@ DaemonControl.prototype._stop = function(callback) {
 		};
 
 		if(self.hooks.term)
-			return self.hooks.term(done, pid);
+			return self.hooks.term(done);
 
 		done(true);
 	});
@@ -343,51 +360,43 @@ DaemonControl.prototype._stop = function(callback) {
 DaemonControl.prototype._stopped = function(callback) {
 	var self = this;
 
-/*
-	this._status(function(pid) {
-		if(! pid)
+	var done = function(verbose) {
+		if(! verbose)
 			return;
 
-		var done = function(verbose) {
-			if(verbose)
-				self._write("Sending SIGTERM to daemon.");
+		self._write("\nDaemon stopped\n");
+	};
 
-			process.kill(pid, "SIGTERM");
-			self._wait(pid, callback);
-		};
+	if(self.hooks.stop)
+		return self.hooks.stop(done);
 
-		if(self.hooks.term)
-			return self.hooks.term(done, pid);
-
-		done(true);
-	});
-*/
+	done(true);
 };
 
 DaemonControl.prototype._syntax = function() {
 	return "Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help" + (this.reload ? "|reload" : "") + "} [...]\n";
 };
 
-DaemonControl.prototype._wait = function(pid, callback, count) {
+DaemonControl.prototype._wait = function(pid, callback, killed, count) {
 	var self = this;
 
 	if(! count)
-		count = 0;
+		count = 1;
 
 	setTimeout(function() {
 		var done = function(verbose) {
 			if(verbose)
 				self._write(".");
 
-			if(count == self.timeout)
-				return;
-
 			try { process.kill(pid, 0); }
 			catch(e) {
 				return self._stopped(callback);
 			}
 
-			self._wait(pid, callback, count + 1);
+			if(count == self.timeout && ! killed)
+				return self._kill(pid, callback);
+
+			self._wait(pid, callback, killed, count + 1);
 		};
 
 		if(self.hooks.wait)

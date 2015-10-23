@@ -94,4 +94,15 @@ describe("daemon", function() {
 			assert.equal(this.dc.stdout, "Daemon is not running\nStarting daemon...\n");
 		});
 	});
+
+	describe("launch", function() {
+		before(function(done) {
+			process.env.__daemon_control = "true";
+			this.dc = helper.dc(done, "daemon.pid", {}, function() { delete process.env.__daemon_control; done(); });
+		});
+
+		it("__daemon_control", function() {
+			assert.equal(process.env.__daemon_control, undefined);
+		});
+	});
 });

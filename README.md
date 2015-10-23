@@ -33,10 +33,6 @@ With [npm](https://www.npmjs.com/package/daemon-control):
 npm install daemon-control
 ```
 
-# Under development
-
-This package is currently under development and __it does not__ what this README says.
-
 # API
 
 ```javascript
@@ -181,6 +177,13 @@ Called when __start__ is requested from command line and the __daemon__ is alrea
 
 Called before sending __SIGHUP__ to __daemon__. If Pid is __null__ this _hook_ has just to print an error message to
 console.
+
+#### wait(done)
+
+* done(verbose): {Function}
+
+Called once per second while waiting for __deamon__ to exit after a __SIGTERM__ have been sent to it. Useull to customize
+the output to console of one dot per second.
 
 ## Command line parameters
 
