@@ -61,7 +61,10 @@ describe("daemon", function() {
 			var self = this;
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done, "daemon.pid", { hooks: { starting: function(cb, options) { cb(false, options); done(); } } });
+				self.dc = helper.dc(done, "daemon.pid", { hooks: {
+					starting: function(cb, options) { cb(false, options); },
+					start:    function(cb, child)   { helper.wait(child.pid, done); cb(false); }
+				} });
 				process.argv = [process.argv[0], "test/helper.js", "start"];
 			});
 		});
@@ -74,13 +77,14 @@ describe("daemon", function() {
 	describe("start hook", function() {
 		before(function(done) {
 			var self = this;
-			var done2 = function() { console.log("2"); setTimeout(done, 500); };
-			var done3 = function() { console.log("3"); setTimeout(done, 500); };
-			var done4 = function() { console.log("4"); setTimeout(done, 500); };
+			var env  = {};
+
+			for(var i in process.env)
+				env[i] = process.env[i];
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done2, "daemon.pid", { cwd: ".", env: process.env, detached: true, hooks: {
-					start: function(cb, child) { cb(false); done3(); }
+				self.dc = helper.dc(done, "daemon.pid", { cwd: process.cwd(), env: env, detached: true, hooks: {
+					start: function(cb, child) { helper.wait(child.pid, done); cb(false); }
 				} });
 				process.argv = [process.argv[0], "test/helper.js", "start"];
 			});
