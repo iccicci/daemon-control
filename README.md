@@ -326,6 +326,8 @@ Do not hesitate to report any bug or inconsistency [@github](https://github.com/
 
 ### ChangeLog
 
+* 2015-10-23 - v0.1.0
+  * First stable release
 * 2015-10-18 - v0.0.2
   * Design pattern refactory
 * 2015-10-15 - v0.0.1
