@@ -11,11 +11,14 @@ describe("signals", function() {
 	describe("reload", function() {
 		before(function(done) {
 			var self = this;
+			var done2 = function() { console.log("2"); setTimeout(done, 500); };
+			var done3 = function() { console.log("3"); setTimeout(done, 500); };
+			var done4 = function() { console.log("4"); setTimeout(done, 500); };
 
-			helper.dcd(done, this, "wait", function() {
-				self.dc = helper.dc(done, "daemon.pid", { reload: true, hooks: { reload: function(cb, pid) {
+			helper.dcd(done2, this, "wait", function() {
+				self.dc = helper.dc(done3, "daemon.pid", { reload: true, hooks: { reload: function(cb, pid) {
 					cb(true);
-					helper.wait(pid, done);
+					helper.wait(pid, done4);
 				} } });
 				process.argv = [process.argv[0], "test/helper.js", "reload"];
 			});
