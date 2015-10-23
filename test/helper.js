@@ -9,6 +9,7 @@ function simple(done, filename, options, daemon) {
 
 	ret.ev = {};
 	ret.once("error", function(err) { ret.ev.err = err; done(); });
+	ret.once("error", function(err) { console.log(err); done(); });
 
 	ret.stdout = "";
 	ret._write = function(msg) { ret.stdout += msg; };
