@@ -79,7 +79,7 @@ describe("daemon", function() {
 			var done4 = function() { console.log("4"); setTimeout(done, 500); };
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done2, "daemon.pid", { cwd: ".", env: {}, detached: true, hooks: {
+				self.dc = helper.dc(done2, "daemon.pid", { cwd: ".", env: process.env, detached: true, hooks: {
 					start: function(cb, child) { cb(false); done3(); }
 				} });
 				process.argv = [process.argv[0], "test/helper.js", "start"];
