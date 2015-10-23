@@ -81,6 +81,8 @@ DaemonControl.prototype._help = function() {
 };
 
 DaemonControl.prototype._init = function() {
+	var i;
+
 	if(! this.daemon)
 		throw new Error("DaemonControl: missing daemon parameter");
 
@@ -109,7 +111,7 @@ DaemonControl.prototype._init = function() {
 			throw new Error("DaemonControl: options.hooks is not an object");
 	}
 
-	for(var i in this.hooks) {
+	for(i in this.hooks) {
 		if(! (i in hooks))
 			throw new Error("DaemonControl: unknow hook options.hooks." + i);
 
@@ -136,13 +138,17 @@ DaemonControl.prototype._init = function() {
 		this.timeout = 5000;
 
 	if(! ("cwd" in this.options))
-		this.options.cwd = process.cwd;
+		this.options.cwd = process.cwd();
 	else
 		if("string" != typeof this.options.cwd)
 			throw new Error("DaemonControl: cwd option is not a string");
 
-	if(! ("env" in this.options))
-		this.options.env = process.env;
+	if(! ("env" in this.options)) {
+		this.options.env = {};
+
+		for(i in process.env)
+			this.options.env[i] = process.env[i];
+	}
 	else
 		if("object" != typeof this.options.env)
 			throw new Error("DaemonControl: env option is not an object");
@@ -184,24 +190,26 @@ DaemonControl.prototype._main = function() {
 };
 
 DaemonControl.prototype._reload = function() {
-	var done;
 	var self = this;
 
 	this._status(function(pid) {
-		if(pid) {
-			throw new Error("ma indove");
-		}
-		else {
-			done = function(verbose) {
-				if(verbose)
-					self._write("Use start command\n");
-			};
+		var done = function(verbose) {
+			if(pid)
+				process.kill(pid, "SIGHUP");
 
-			if(self.hooks.reload)
-				return self.hooks.reload(done, pid);
+			if(! verbose)
+				return;
 
-			done(true);
-		}
+			if(pid)
+				return self._write("Sending SIGHUP to daemon.\n");
+
+			self._write("Use start command\n");
+		};
+
+		if(self.hooks.reload)
+			return self.hooks.reload(done, pid);
+
+		done(true);
 	});
 };
 
@@ -227,11 +235,6 @@ DaemonControl.prototype._start = function(callback) {
 				var child;
 
 				done = function(verbose) {
-					fs.writeFile(self.filename, child.pid, function(err) {
-						if(err)
-							self.emit("error", err);
-					});
-
 					if(! verbose)
 						return;
 
@@ -244,15 +247,20 @@ DaemonControl.prototype._start = function(callback) {
 				if(verbose)
 					self._write("Starting daemon...\n");
 
-				options.__daemon_control = "true";
+				options.env.__daemon_control = "true";
 				argv.unshift(process.argv[1]);
 				child = child_process.spawn(process.argv[0], argv, options);
 				child.on("error", self.emit.bind(self, "error"));
 
-				if(self.hooks.start)
-					return self.hooks.start(done, child);
+				fs.writeFile(self.filename, child.pid, function(err) {
+					if(err)
+						self.emit("error", err);
 
-				done(true);
+					if(self.hooks.start)
+						return self.hooks.start(done, child);
+
+					done(true);
+				});
 			};
 
 			if(self.hooks.starting)
@@ -266,7 +274,7 @@ DaemonControl.prototype._start = function(callback) {
 DaemonControl.prototype._status = function(callback) {
 	var self = this;
 	var done = function(pid) {
-		fs.unlink(self.filename, function() {
+		done = function() {
 			done = function(verbose, pid) {
 				if(verbose) {
 					if(! pid)
@@ -283,7 +291,12 @@ DaemonControl.prototype._status = function(callback) {
 				return self.hooks.status(done, pid);
 
 			done(true, pid);
-		});
+		};
+
+		if(pid)
+			return done();
+
+		fs.unlink(self.filename, done);
 	};
 
 	fs.readFile(this.filename, function(err, data) {
@@ -305,28 +318,85 @@ DaemonControl.prototype._status = function(callback) {
 	});
 };
 
+DaemonControl.prototype._stop = function(callback) {
+	var self = this;
+
+	this._status(function(pid) {
+		if(! pid)
+			return;
+
+		var done = function(verbose) {
+			if(verbose)
+				self._write("Sending SIGTERM to daemon.");
+
+			process.kill(pid, "SIGTERM");
+			self._wait(pid, callback);
+		};
+
+		if(self.hooks.term)
+			return self.hooks.term(done, pid);
+
+		done(true);
+	});
+};
+
+DaemonControl.prototype._stopped = function(callback) {
+	var self = this;
+
+/*
+	this._status(function(pid) {
+		if(! pid)
+			return;
+
+		var done = function(verbose) {
+			if(verbose)
+				self._write("Sending SIGTERM to daemon.");
+
+			process.kill(pid, "SIGTERM");
+			self._wait(pid, callback);
+		};
+
+		if(self.hooks.term)
+			return self.hooks.term(done, pid);
+
+		done(true);
+	});
+*/
+};
+
 DaemonControl.prototype._syntax = function() {
 	return "Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help" + (this.reload ? "|reload" : "") + "} [...]\n";
+};
+
+DaemonControl.prototype._wait = function(pid, callback, count) {
+	var self = this;
+
+	if(! count)
+		count = 0;
+
+	setTimeout(function() {
+		var done = function(verbose) {
+			if(verbose)
+				self._write(".");
+
+			if(count == self.timeout)
+				return;
+
+			try { process.kill(pid, 0); }
+			catch(e) {
+				return self._stopped(callback);
+			}
+
+			self._wait(pid, callback, count + 1);
+		};
+
+		if(self.hooks.wait)
+			return self.hooks.wait(done);
+
+		done(true);
+	}, 1000);
 };
 
 DaemonControl.prototype._write = function(msg) {
 	process.stdout.write(msg);
 };
-/*
-function daemon(options) {
-
-}
-
-
-console.log(process.argv);
-
-var child = child_process.spawn("/bin/basho", ["-c", "sleep 2"], {stdio:"inherit"});
-
-console.log(child.pid);
-
-child.on("error", function(err) {
-	console.log(err);
-});
-child.unref();
-console.log(typeof true);
-*/

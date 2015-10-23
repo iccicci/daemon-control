@@ -8,23 +8,57 @@ var helper   = require("./helper");
 var events   = require("events");
 
 describe("signals", function() {
-	describe("start error", function() {
+	describe("reload", function() {
 		before(function(done) {
 			var self = this;
-			var node = process.argv[0];
 
-			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(function() { process.argv[0] = node; done(); }, "daemon.pid");
-				process.argv = ["none", "test", "start"];
+			helper.dcd(done, this, "wait", function() {
+				self.dc = helper.dc(done, "daemon.pid", { reload: true, hooks: { reload: function(cb, pid) {
+					cb(true);
+					helper.wait(pid, done);
+				} } });
+				process.argv = [process.argv[0], "test/helper.js", "reload"];
 			});
 		});
 
-		it("error", function() {
-			assert.equal(this.dc.ev.err.code, "ENOENT");
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is running with pid: " + this.pid + "\nSending SIGHUP to daemon.\n");
+		});
+	});
+
+	describe("stop", function() {
+		before(function(done) {
+			var self = this;
+
+			helper.dcd(done, this, "wait", function() {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { term: function(cb, pid) {
+					cb(true);
+					helper.wait(pid, done);
+				} } });
+				process.argv = [process.argv[0], "test/helper.js", "stop"];
+			});
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout, "Daemon is not running\nStarting daemon...\nDaemon not started\n");
+			assert.equal(this.dc.stdout, "Daemon is running with pid: " + this.pid + "\nSending SIGTERM to daemon.");
+		});
+	});
+
+	describe("stop (1 sec delay)", function() {
+		before(function(done) {
+			var self = this;
+
+			helper.dcd(done, this, "delay", function() {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { term: function(cb, pid) {
+					cb(true);
+					helper.wait(pid, done);
+				} } });
+				process.argv = [process.argv[0], "test/helper.js", "stop"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is running with pid: " + this.pid + "\nSending SIGTERM to daemon..");
 		});
 	});
 });

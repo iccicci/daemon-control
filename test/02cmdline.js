@@ -288,4 +288,24 @@ describe("cmdline", function() {
 			assert.equal(this.dc.stdout, "Daemon is not running\n");
 		});
 	});
+
+	describe("stop (not running)", function() {
+		before(function(done) {
+			var self = this;
+
+			fs.unlink("daemon.pid", function() {
+				self.dc = helper.dc(done, "daemon.pid");
+				self.dc.stdout = [];
+				process.argv = [process.argv[0], "test", "stop"];
+				self.dc._write = function(msg) {
+					self.dc.stdout = msg;
+					done();
+				};
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is not running\n");
+		});
+	});
 });

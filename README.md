@@ -74,7 +74,7 @@ The path of the _pidfile_.
 
 #### options {Object}
 
-* cwd: {String} (default: __process.cwd__) Proxied to __child_process.spawn__.
+* cwd: {String} (default: __process.cwd()__) Proxied to __child_process.spawn__.
 * detached: {Boolean} (default: __true__) Proxied to __child_process.spawn__.
 * env: {Object} (default: __process.env__) Proxied to __child_process.spawn__.
 * hooks: {Object} (default: __null__) Defines _hooks_ for each step of _control script_.
@@ -132,13 +132,14 @@ called with __pid__ parameter set to __null__, otherwise with the value passed t
 * done(verbose): {Function}
 
 Called before sending __SIGTERM__ to __daemon__.
+This _hook_ is not called if __daemon__ is not running.
 
 #### kill(done)
 
 * done(verbose): {Function}
 
 Called before sending __SIGKILL__ to __daemon__.
-This _method_ is not called if __SIGTERM__ was enough to stop the __daemon__.
+This _hook_ is not called if __SIGTERM__ was enough to stop the __daemon__.
 
 #### stop(done)
 
@@ -318,7 +319,7 @@ __Note:__ tested only under __UNIX__.
 
 ### Bugs
 
-Do not hesitate to report any bug or inconsistency @[github](https://github.com/iccicci/daemon-control/issues).
+Do not hesitate to report any bug or inconsistency [@github](https://github.com/iccicci/daemon-control/issues).
 
 ### ChangeLog
 

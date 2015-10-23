@@ -14,7 +14,7 @@ describe("daemon", function() {
 			var node = process.argv[0];
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(function() { process.argv[0] = node; done(); }, "daemon.pid");
+				self.dc = helper.dc(function() { process.argv[0] = node; setTimeout(done, 100); }, "daemon.pid");
 				process.argv = ["none", "test", "start"];
 			});
 		});
@@ -36,7 +36,7 @@ describe("daemon", function() {
 
 			fs.unlink("daemon.pid", function() {
 				self.dc = helper.dc(done, "daemon.pid", { hooks: { start: function(cb, child) { pid = child.pid; cb(true); done(); } } });
-				process.argv = [process.argv[0], "helper.js", "start"];
+				process.argv = [process.argv[0], "test/helper.js", "start"];
 			});
 		});
 
@@ -48,7 +48,7 @@ describe("daemon", function() {
 	describe("error writing pid file", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, "none/test.pid");
-			process.argv = [process.argv[0], "helper.js", "start"];
+			process.argv = [process.argv[0], "test/helper.js", "start"];
 		});
 
 		it("error", function() {
@@ -62,12 +62,12 @@ describe("daemon", function() {
 
 			fs.unlink("daemon.pid", function() {
 				self.dc = helper.dc(done, "daemon.pid", { hooks: { starting: function(cb, options) { cb(false, options); done(); } } });
-				process.argv = [process.argv[0], "helper.js", "start"];
+				process.argv = [process.argv[0], "test/helper.js", "start"];
 			});
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout.substr(0, 47), "Daemon is not running\nDaemon started with pid: ");
+			assert.equal(this.dc.stdout.substr(0, 22), "Daemon is not running\n");
 		});
 	});
 
@@ -78,8 +78,10 @@ describe("daemon", function() {
 			var self = this;
 
 			fs.unlink("daemon.pid", function() {
-				self.dc = helper.dc(done, "daemon.pid", { detached: true, hooks: { start: function(cb, child) { pid = child.pid; cb(false); done(); } } });
-				process.argv = [process.argv[0], "helper.js", "start"];
+				self.dc = helper.dc(done, "daemon.pid", { cwd: ".", env: {}, detached: true, hooks: {
+					start: function(cb, child) { pid = child.pid; cb(false); done(); }
+				} });
+				process.argv = [process.argv[0], "test/helper.js", "start"];
 			});
 		});
 
