@@ -9,17 +9,13 @@ var events   = require("events");
 
 describe("signals", function() {
 	describe("reload", function() {
-		this.timeout(10000);
 		before(function(done) {
 			var self = this;
-			var done2 = function() { console.log("2"); setTimeout(done, 5000); };
-			var done3 = function() { console.log("3"); setTimeout(done, 5000); };
-			var done4 = function() { console.log("4"); setTimeout(done, 5000); };
 
-			helper.dcd(done2, this, "wait", function() {
-				self.dc = helper.dc(done3, "daemon.pid", { reload: true, hooks: { reload: function(cb, pid) {
+			helper.dcd(done, this, "wait", function() {
+				self.dc = helper.dc(done, "daemon.pid", { reload: true, hooks: { reload: function(cb, pid) {
 					cb(true);
-					helper.wait(pid, done4);
+					helper.wait(pid, done);
 				} } });
 				process.argv = [process.argv[0], "test/helper.js", "reload"];
 			});
