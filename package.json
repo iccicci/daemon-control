@@ -1,6 +1,6 @@
 {
   "name": "daemon-control",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Daemon control script with pidfile management utility",
   "scripts": {
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test",
