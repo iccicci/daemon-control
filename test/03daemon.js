@@ -45,6 +45,23 @@ describe("daemon", function() {
 		});
 	});
 
+	describe("restart (not running)", function() {
+		var pid;
+
+		before(function(done) {
+			var self = this;
+
+			fs.unlink("daemon.pid", function() {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { start: function(cb, child) { pid = child.pid; cb(true); done(); } } });
+				process.argv = [process.argv[0], "test/helper.js", "restart"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is not running\nStarting daemon...\nDaemon started with pid: " + pid + "\n");
+		});
+	});
+
 	describe("error writing pid file", function() {
 		before(function(done) {
 			this.dc = helper.dc(done, "none/test.pid");

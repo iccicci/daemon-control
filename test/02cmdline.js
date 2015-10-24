@@ -46,8 +46,22 @@ describe("cmdline", function() {
 
 	describe("syntax hook", function() {
 		before(function(done) {
-			this.dc = helper.dc(done, "test", { syntax: function(cb) { cb(false); done(); } });
+			this.dc = helper.dc(done, "test", { hooks: { syntax: function(cb) { cb(false); done(); } } });
 			process.argv = [process.argv[0], "test"];
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "");
+		});
+	});
+
+	describe("argv hook", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, "test", { hooks: {
+				argv:   function(cb, cmd, argv) { cb(); },
+				syntax: function(cb) { cb(false); done(); }
+			} });
+			process.argv = [process.argv[0], "test", "help"];
 		});
 
 		it("output", function() {

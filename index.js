@@ -33,6 +33,7 @@ var commands = {
 };
 
 var hooks = {
+	argv:     null,
 	help:     null,
 	kill:     null,
 	reload:   null,
@@ -46,17 +47,20 @@ var hooks = {
 	wait:     null
 };
 
-DaemonControl.prototype._cmdline = function() {
+DaemonControl.prototype._cmdline = function(callback) {
 	if(process.argv.length < 3)
-		return false;
+		return callback();
 
 	if(! (process.argv[2] in commands))
-		return false;
+		return callback();
 
 	if(process.argv[2] == "reload" && ! this.reload)
-		return false;
+		return callback();
 
-	return process.argv[2];
+	if(this.hooks.argv)
+		return this.hooks.argv(callback, process.argv[2], process.argv.slice(3));
+
+	callback(process.argv[2], process.argv.slice(3));
 };
 
 DaemonControl.prototype._help = function() {
@@ -188,22 +192,24 @@ DaemonControl.prototype._main = function() {
 	if(process.env.__daemon_control)
 		return this.daemon();
 
-	var cmd  = this._cmdline();
 	var self = this;
 
-	if(! cmd) {
-		var done = function(verbose) {
-			if(verbose)
-				self._write(self._syntax());
-		};
+	this._cmdline(function(cmd, argv) {
+		if(! cmd) {
+			var done = function(verbose) {
+				if(verbose)
+					self._write(self._syntax());
+			};
 
-		if(this.options.syntax)
-			return this.options.syntax(done);
+			if(self.hooks.syntax)
+				return self.hooks.syntax(done);
 
-		return done(true);
-	}
+			return done(true);
+		}
 
-	eval("this._" + cmd + "();");
+		self.argv = argv;
+		eval("self._" + cmd + "();");
+	});
 };
 
 DaemonControl.prototype._reload = function() {
@@ -230,11 +236,13 @@ DaemonControl.prototype._reload = function() {
 	});
 };
 
-DaemonControl.prototype._start = function(callback) {
-	var done;
-	var self = this;
+DaemonControl.prototype._restart = function() {
+	this._stop(this._start.bind(this, true));
+};
 
-	this._status(function(pid) {
+DaemonControl.prototype._start = function(checked) {
+	var self = this;
+	var done = function(pid) {
 		if(pid) {
 			done = function(verbose) {
 				if(verbose)
@@ -248,7 +256,6 @@ DaemonControl.prototype._start = function(callback) {
 		}
 		else {
 			done = function(verbose, options) {
-				var argv = process.argv.slice(3);
 				var child;
 
 				done = function(verbose) {
@@ -265,9 +272,10 @@ DaemonControl.prototype._start = function(callback) {
 					self._write("Starting daemon...\n");
 
 				options.env.__daemon_control = "true";
-				argv.unshift(process.argv[1]);
-				child = child_process.spawn(process.argv[0], argv, options);
+				self.argv.unshift(process.argv[1]);
+				child = child_process.spawn(process.argv[0], self.argv, options);
 				child.on("error", self.emit.bind(self, "error"));
+				child.unref();
 
 				fs.writeFile(self.filename, child.pid, function(err) {
 					if(err)
@@ -285,7 +293,12 @@ DaemonControl.prototype._start = function(callback) {
 
 			done(true, self.options);
 		}
-	});
+	};
+
+	if(checked)
+		return done(null);
+
+	this._status(done);
 };
 
 DaemonControl.prototype._status = function(callback) {
@@ -339,8 +352,12 @@ DaemonControl.prototype._stop = function(callback) {
 	var self = this;
 
 	this._status(function(pid) {
-		if(! pid)
-			return;
+		if(! pid) {
+			if(! callback)
+				return;
+
+			return callback();
+		}
 
 		var done = function(verbose) {
 			if(verbose)
@@ -361,10 +378,11 @@ DaemonControl.prototype._stopped = function(callback) {
 	var self = this;
 
 	var done = function(verbose) {
-		if(! verbose)
-			return;
+		if(verbose)
+			self._write("\nDaemon stopped\n");
 
-		self._write("\nDaemon stopped\n");
+		if(callback)
+			callback();
 	};
 
 	if(self.hooks.stop)

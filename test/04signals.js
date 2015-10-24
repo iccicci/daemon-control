@@ -40,6 +40,26 @@ describe("signals", function() {
 		});
 	});
 
+	describe("restart (running)", function() {
+		before(function(done) {
+			var self = this;
+
+			helper.dcd(done, this, "wait", function() {
+				self.dc = helper.dc(done, "daemon.pid", { hooks: { start: function(cb, child) {
+					self.pid2 = child.pid;
+					cb(true);
+					helper.wait(self.pid2, done);
+				} } });
+				process.argv = [process.argv[0], "test/helper.js", "restart"];
+			});
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Daemon is running with pid: " + this.pid + "\nSending SIGTERM to daemon..\n" +
+				"Daemon stopped\nStarting daemon...\nDaemon started with pid: " + this.pid2 + "\n");
+		});
+	});
+
 	describe("stop (1 sec delay)", function() {
 		before(function(done) {
 			var self = this;

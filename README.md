@@ -57,8 +57,8 @@ Emitted when an error occurr.
 
 ### [new] DaemonControl(daemon, filename[, options])
 
-Returns a new __DaemonControl__ to control the daemon, parses _command line arguments_ and try to act as requested
-by _command line_.
+Returns a new __DaemonControl__ to control the daemon, parses _command line arguments_ and try to act as
+requested by _command line_.
 
 #### daemon {Function}
 
@@ -113,6 +113,19 @@ Called when there is _syntax error_ in _command line_.
 * done(verbose): {Function}
 
 Called when __help__ is requested from _command line_.
+
+#### argv(done, command, argv)
+
+* done(command, argv): {Function} This is the special case where __done__ _Function_ does not accept a
+__verbose__ parameter.
+* command {String}: The __command__.
+* argv {Array}: The rest of arguments in _command line_.
+
+Called to parse _command line_. By default __done__ is called with __command__ and __argv__ passed to this
+__hook__.
+
+When _command line_ is parsed, __done__ must be called with the __command__ in input (or __null__ if a
+syntax error is detected) and the __argv__ that will be passed to __daemon__ _command line_.
 
 #### status(done, pid)
 
@@ -326,6 +339,11 @@ Do not hesitate to report any bug or inconsistency [@github](https://github.com/
 
 ### ChangeLog
 
+* 2015-10-?? - v0.1.1
+  * Added complete example.
+  * Added __argv hook__.
+  * Fixed __syntax hook__.
+  * Fixed __restart command__.
 * 2015-10-23 - v0.1.0
   * First stable release
 * 2015-10-18 - v0.0.2
