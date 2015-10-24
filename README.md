@@ -27,7 +27,7 @@ $ node daemon.js {start|stop|restart|status|help[|reload]} [...]
 ```
 
 A complete example can be found in
-[sources @github](https://github.com/iccicci/daemon-control/blob/master/example/complete.js)
+[sources @github](https://github.com/iccicci/daemon-control/blob/master/example/complete.js).
 
 # Installation
 
