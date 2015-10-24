@@ -26,6 +26,9 @@ dc(daemon, 'daemon.pid');
 $ node daemon.js {start|stop|restart|status|help[|reload]} [...]
 ```
 
+A complete example can be found in
+[sources @github](https://github.com/iccicci/daemon-control/blob/master/example/complete.js)
+
 # Installation
 
 With [npm](https://www.npmjs.com/package/daemon-control):
@@ -235,86 +238,6 @@ A __status__ check is performed, if the __daemon__ is running the pakage send it
 If __reload option__ was __false__ when _constructor_ was called, this command is not enabled and it cause a
 _syntax error_.
 
-## Complex example
-
-```javascript
-var dc = require('daemon-control');
-var fs = require('fs');
-
-function checks() {
-  // performs custm checks and returns checks result
-}
-
-var recover;
-
-function status(done, pid) {
-  if(! pid) {
-    console.log('Daemon is not running');
-
-    return done(false);
-  }
-
-  if(checks()) {
-    console.log('Daemon is running with pid: ' + pid);
-
-    return done(false, pid);
-  }
-
-  recover = true;
-  console.log('Daemon is not running');
-  done(false);
-});
-
-function kill(done) {
-  // a SIGKILL was required, let's do recovery procedure
-  recover = true;
-  done(true);
-});
-
-function starting(done, options) {
-  if(recover) {
-    // let's set this to instruct daemon to run recovery procedure
-    options.env.recover = true;
-    // let's add a pipe for recovery procedure output
-    options.stdio = ['ignore', 'ignore', 'ignore', 'pipe'];
-  }
-
-  done(true, options);
-});
-
-function start(done, child) {
-  if(child.pid && recover)
-    // let's print recovery procedure output to console
-    child.stdio[3].pipe(process.stdout);
-
-  done(true);
-});
-
-function daemon() {
-  if(process.env.recover) {
-     // the pipe we added in starting hook
-    var out = fs.createWriteStream(3);
-
-    out.write("Recovering...\n");
-    // perform recovery procedure
-    out.end("Recovered\n");
-  }
-
-  // do daemon stuff
-}
-
-var hooks = {
-  kill:     kill,
-  start:    start,
-  starting: starting,
-  status:   status
-};
-
-dc(daemon, 'daemon.pid', { hooks: hooks }).on('error', function(err) {
-  throw err;
-});
-```
-
 ### Compatibility
 
 This package is written following  __Node.js 4.2__ specifications always taking care about backward
@@ -339,7 +262,7 @@ Do not hesitate to report any bug or inconsistency [@github](https://github.com/
 
 ### ChangeLog
 
-* 2015-10-?? - v0.1.1
+* 2015-10-24 - v0.1.1
   * Added complete example.
   * Added __argv hook__.
   * Fixed __syntax hook__.

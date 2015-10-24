@@ -122,7 +122,7 @@ var to;
 
 function daemon() {
 	process.on("SIGHUP", function() {
-		// deamon should never write t console, done just for example
+		// deamon should never write to console, done just for example
 		console.log("\n  configuration reloaded");
 	});
 
@@ -146,7 +146,7 @@ function daemon() {
 
 function main() {
 	to = setTimeout(function() {
-		// deamon should never write t console, done just for example
+		// deamon should never write to console, done just for example
 		console.log("\n...still runnig with pid: " + process.pid);
 		main();
 	}, 20000);
