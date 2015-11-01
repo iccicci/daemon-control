@@ -16,7 +16,7 @@ describe("cmdline", function() {
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|help} [...]\n");
+			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|nodaemon|help} [...]\n");
 		});
 	});
 
@@ -28,7 +28,7 @@ describe("cmdline", function() {
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|help} [...]\n");
+			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|nodaemon|help} [...]\n");
 		});
 	});
 
@@ -40,7 +40,7 @@ describe("cmdline", function() {
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|help} [...]\n");
+			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|nodaemon|help} [...]\n");
 		});
 	});
 
@@ -77,7 +77,7 @@ describe("cmdline", function() {
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|help|reload} [...]\n");
+			assert.equal(this.dc.stdout, "Usage:\nnode test {start|stop|restart|status|nodaemon|help|reload} [...]\n");
 		});
 	});
 
@@ -89,7 +89,7 @@ describe("cmdline", function() {
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout.length, 220);
+			assert.equal(this.dc.stdout.length, 298);
 		});
 	});
 
@@ -101,7 +101,7 @@ describe("cmdline", function() {
 		});
 
 		it("output", function() {
-			assert.equal(this.dc.stdout.length, 274);
+			assert.equal(this.dc.stdout.length, 352);
 		});
 	});
 

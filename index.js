@@ -72,6 +72,7 @@ DaemonControl.prototype._help = function() {
 
 		self._write(self._syntax() + "\n");
 		self._write("help      prints this screen\n");
+		self._write("nodaemon  launches the application without detaching it from console\n");
 		self._write("status    checks id daemon is running\n");
 		self._write("start     launches the daemon\n");
 		self._write("stop      stops the daemon\n");
@@ -407,7 +408,7 @@ DaemonControl.prototype._stopped = function(callback) {
 };
 
 DaemonControl.prototype._syntax = function() {
-	return "Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|help" + (this.reload ? "|reload" : "") + "} [...]\n";
+	return "Usage:\nnode " + path.basename(process.argv[1]) + " {start|stop|restart|status|nodaemon|help" + (this.reload ? "|reload" : "") + "} [...]\n";
 };
 
 DaemonControl.prototype._wait = function(pid, callback, killed, count) {
