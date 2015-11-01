@@ -322,4 +322,30 @@ describe("cmdline", function() {
 			assert.equal(this.dc.stdout, "Daemon is not running\n");
 		});
 	});
+
+	describe("nodaemon", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, "test", {}, done);
+			process.argv = [process.argv[0], "test", "nodaemon"];
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Starting in console.\n");
+		});
+	});
+
+	describe("nodaemon (with error)", function() {
+		before(function(done) {
+			this.dc = helper.dc(done, "test", {}, function() { throw new Error("Test"); });
+			process.argv = [process.argv[0], "test", "nodaemon"];
+		});
+
+		it("error", function() {
+			assert.equal(this.dc.ev.err.message, "Test");
+		});
+
+		it("output", function() {
+			assert.equal(this.dc.stdout, "Starting in console.\n");
+		});
+	});
 });

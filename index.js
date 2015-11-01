@@ -24,12 +24,13 @@ DaemonControl.prototype = new EventEmitter();
 module.exports = DaemonControl;
 
 var commands = {
-	start:   null,
-	stop:    null,
-	restart: null,
-	status:  null,
-	help:    null,
-	reload:  null
+	help:     null,
+	nodaemon: null,
+	reload:   null,
+	restart:  null,
+	start:    null,
+	status:   null,
+	stop:     null,
 };
 
 var hooks = {
@@ -44,7 +45,7 @@ var hooks = {
 	stop:     null,
 	syntax:   null,
 	term:     null,
-	wait:     null
+	wait:     null,
 };
 
 DaemonControl.prototype._cmdline = function(callback) {
@@ -209,6 +210,20 @@ DaemonControl.prototype._main = function() {
 
 		self.argv = argv;
 		eval("self._" + cmd + "();");
+	});
+};
+
+DaemonControl.prototype._nodaemon = function() {
+	var self = this;
+
+	process.nextTick(function() {
+		try {
+			self._write("Starting in console.\n");
+			self.daemon();
+		}
+		catch(e) {
+			self.emit("error", e);
+		}
 	});
 };
 

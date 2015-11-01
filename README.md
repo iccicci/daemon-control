@@ -23,7 +23,7 @@ dc(daemon, 'daemon.pid');
 ```
 
 ```
-$ node daemon.js {start|stop|restart|status|help[|reload]} [...]
+$ node daemon.js {start|stop|restart|status|nodaemon|help[|reload]} [...]
 ```
 
 A complete example can be found in
@@ -204,7 +204,7 @@ the output to console of one dot per second.
 ## Command line parameters
 
 ```
-$ node daemon.js {start|stop|restart|status|help[|reload]} [...]
+$ node daemon.js {start|stop|restart|status|nodaemon|help[|reload]} [...]
 ```
 
 The first parameter is consumed by _control script_, from second one to last one (if present) they are passed to the
@@ -238,7 +238,11 @@ A __status__ check is performed, if the __daemon__ is running the pakage send it
 If __reload option__ was __false__ when _constructor_ was called, this command is not enabled and it cause a
 _syntax error_.
 
-### Compatibility
+### nodaemon
+
+The _Function_ __daemon__ is launched without running a daemon. Usefull during application development.
+
+## Compatibility
 
 This package is written following  __Node.js 4.2__ specifications always taking care about backward
 compatibility. The package it tested under following versions:
@@ -252,16 +256,18 @@ __Note:__ required __Node.js 0.11__.
 
 __Note:__ tested only under __UNIX__.
 
-### Licence
+## Licence
 
 [MIT Licence](https://github.com/iccicci/daemon-control/blob/master/LICENSE)
 
-### Bugs
+## Bugs
 
 Do not hesitate to report any bug or inconsistency [@github](https://github.com/iccicci/daemon-control/issues).
 
-### ChangeLog
+## ChangeLog
 
+* 2015-11-01 - v0.1.2
+  * Added nodaemon parameter.
 * 2015-10-24 - v0.1.1
   * Added complete example.
   * Added __argv hook__.
