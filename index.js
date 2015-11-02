@@ -148,6 +148,12 @@ DaemonControl.prototype._init_options = function() {
 	else
 		this.timeout = 5;
 
+	this._init_spawn();
+};
+
+DaemonControl.prototype._init_spawn = function() {
+	var i;
+
 	if(! ("cwd" in this.options))
 		this.options.cwd = process.cwd();
 	else
