@@ -192,7 +192,7 @@ DaemonControl.prototype._main = function() {
 	}
 
 	if(process.env.__daemon_control)
-		return this.daemon();
+		return this.daemon(true);
 
 	var self = this;
 
@@ -220,7 +220,7 @@ DaemonControl.prototype._nodaemon = function() {
 	process.nextTick(function() {
 		try {
 			self._write("Starting in console.\n");
-			self.daemon();
+			self.daemon(false);
 		}
 		catch(e) {
 			self.emit("error", e);

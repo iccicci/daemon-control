@@ -16,7 +16,7 @@ well a lot of ways to deeply configure _control script_ behaviour for each step.
 ```javascript
 var dc = require('daemon-control');
 
-function daemon() {
+function daemon(daemonized) {
 }
 
 dc(daemon, 'daemon.pid');
@@ -63,7 +63,9 @@ Emitted when an error occurr.
 Returns a new __DaemonControl__ to control the daemon, parses _command line arguments_ and try to act as
 requested by _command line_.
 
-#### daemon {Function}
+#### daemon(daemonized) {Function}
+
+* daemonized: {Boolean} __true__ if lunched as a __daemon__ or __false__ if launched with __nodaemon__ command.
 
 The daemon entry point.
 
@@ -77,7 +79,7 @@ The path of the _pidfile_.
 * detached: {Boolean} (default: __true__) Proxied to __child_process.spawn__.
 * env: {Object} (default: __process.env__) Proxied to __child_process.spawn__.
 * hooks: {Object} (default: __null__) Defines _hooks_ for each step of _control script_.
-* reload: {Boolean} (default: __false__) Specifies if __reload__ parameter is enabled or not.
+* reload: {Boolean} (default: __false__) Specifies if __reload command__ is enabled or not.
 * timeout: {Integer} (default: __5__) Specifies __SIGKILL__ timeout.
 * stdio: {Array|String} (default: __'ignore'__) Proxied to __child_process.spawn__.
 
@@ -266,8 +268,10 @@ Do not hesitate to report any bug or inconsistency [@github](https://github.com/
 
 ## ChangeLog
 
+* 2015-11-02 - v0.1.3
+  * Added _daemonized_ paramenter to __daemon__ _Function_.
 * 2015-11-01 - v0.1.2
-  * Added nodaemon parameter.
+  * Added __nodaemon command__.
 * 2015-10-24 - v0.1.1
   * Added complete example.
   * Added __argv hook__.
