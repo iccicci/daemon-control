@@ -1,11 +1,11 @@
 {
   "name": "daemon-control",
-  "version": "0.1.3",
+  "version": "0.1.2",
   "description": "Daemon control script with pidfile management utility",
   "scripts": {
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test",
     "jshint": "./node_modules/.bin/jshint *.js test",
-    "npmignore": "echo '.jshintrc\\n.gitignore\\n.travis.yml\\ntest\\nexample' > .npmignore ; cat .gitignore >> .npmignore",
+    "npmignore": "echo '.eslintrc\\n.codeclimate.yml\\n.jshintrc\\n.gitignore\\n.travis.yml\\ntest\\nexample' > .npmignore ; cat .gitignore >> .npmignore",
     "t": "./node_modules/.bin/_mocha test",
     "test": "npm run npmignore && npm run jshint && npm run coverage"
   },
