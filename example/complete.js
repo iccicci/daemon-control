@@ -74,6 +74,8 @@ var hooks = {
 		if(recover)
 			// let's pipe daemon recovery procedure output to stdout
 			child.stdio[3].pipe(process.stdout);
+
+		done(false);
 	},
 	starting: function(done, options) {
 		if(recover) {
@@ -120,7 +122,7 @@ var hooks = {
 
 var to;
 
-function daemon() {
+function daemon(daemonized) {
 	process.on("SIGHUP", function() {
 		// deamon should never write to console, done just for example
 		console.log("\n  configuration reloaded");
@@ -139,6 +141,9 @@ function daemon() {
 			main();
 		}, 2000);
 	}
+
+	if(! daemonized)
+		console.log("Running in console.");
 
 	// do daemon stuff
 	main();
