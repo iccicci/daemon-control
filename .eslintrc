@@ -245,3 +245,4 @@ rules:
   yoda:
   - 0
   - never
+  node: 2
