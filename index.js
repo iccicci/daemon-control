@@ -88,8 +88,6 @@ DaemonControl.prototype._help = function() {
 };
 
 DaemonControl.prototype._init = function() {
-	var i;
-
 	if(! this.daemon)
 		throw new Error("DaemonControl: missing daemon parameter");
 
@@ -107,6 +105,12 @@ DaemonControl.prototype._init = function() {
 	else
 		if("object" != typeof this.options)
 			throw new Error("DaemonControl: options parameter is not an object");
+
+	this._init_options();
+};
+
+DaemonControl.prototype._init_options = function() {
+	var i;
 
 	if(! this.options.hooks)
 		this.hooks = {};
