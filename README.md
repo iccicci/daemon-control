@@ -3,10 +3,11 @@
 [![Build Status](https://travis-ci.org/iccicci/daemon-control.png)](https://travis-ci.org/iccicci/daemon-control)
 [![Code Climate](https://codeclimate.com/github/iccicci/daemon-control/badges/gpa.svg)](https://codeclimate.com/github/iccicci/daemon-control)
 [![Test Coverage](https://codeclimate.com/github/iccicci/daemon-control/badges/coverage.svg)](https://codeclimate.com/github/iccicci/daemon-control/coverage)
-[![Donate](http://img.shields.io/bitcoin/donate.png?color=red)](https://www.coinbase.com/cicci)
+[![Donate](http://img.shields.io/bitcoin/donate.png?color=blue)](https://www.coinbase.com/cicci)
 
-[![dependency status](https://david-dm.org/iccicci/daemon-control.svg)](https://david-dm.org/iccicci/daemon-control#info=dependencies)
-[![dev dependency status](https://david-dm.org/iccicci/daemon-control/dev-status.svg)](https://david-dm.org/iccicci/daemon-control#info=devDependencies)
+[![NPM version](https://badge.fury.io/js/daemon-control.svg)](https://www.npmjs.com/package/daemon-control)
+[![dependency status](https://david-dm.org/iccicci/daemon-control.svg)](https://david-dm.org/iccicci/daemon-control)
+[![dev dependency status](https://david-dm.org/iccicci/daemon-control/dev-status.svg)](https://david-dm.org/iccicci/daemon-control?type=dev)
 
 This package offers an easy and quick to use tool to manage the _control script_ for a __daemon__ as
 well a lot of ways to deeply configure _control script_ behaviour for each step.
@@ -247,12 +248,8 @@ The _Function_ __daemon__ is launched without running a daemon. Usefull during a
 ## Compatibility
 
 This package is written following  __Node.js 4.2__ specifications always taking care about backward
-compatibility. The package it tested under following versions:
-* 4.2
-* 4.1
-* 4.0
-* 0.12
-* 0.11
+compatibility. The package it tested under
+[several Node.js versions](https://travis-ci.org/iccicci/daemon-control).
 
 __Note:__ required __Node.js 0.11__.
 

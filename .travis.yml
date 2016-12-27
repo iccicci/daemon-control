@@ -3,6 +3,22 @@ sudo: false
 language: node_js
 
 node_js:
+  - "6.1"
+  - "6.0"
+  - "5.11"
+  - "5.10"
+  - "5.9"
+  - "5.8"
+  - "5.7"
+  - "5.6"
+  - "5.5"
+  - "5.4"
+  - "5.3"
+  - "5.2"
+  - "5.1"
+  - "5.0"
+  - "4.4"
+  - "4.3"
   - "4.2"
   - "4.1"
   - "4.0"
@@ -12,6 +28,9 @@ node_js:
 addons:
   code_climate:
     repo_token: 3cdde9b8d06b7f0be9658c00e71e16218cf21279c007806f111e6add1956b450
+
+before_script:
+  - node sleep.js
 
 after_script:
   - npm install codeclimate-test-reporter
