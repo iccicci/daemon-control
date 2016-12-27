@@ -265,6 +265,8 @@ Do not hesitate to report any bug or inconsistency [@github](https://github.com/
 
 ## ChangeLog
 
+* 2016-12-27 - v0.1.4
+  * Updated dependencies
 * 2015-11-02 - v0.1.3
   * Added _daemonized_ paramenter to __daemon__ _Function_.
 * 2015-11-01 - v0.1.2

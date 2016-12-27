@@ -122,6 +122,14 @@ var hooks = {
 
 var to;
 
+function main() {
+	to = setTimeout(function() {
+		// deamon should never write to console, done just for example
+		console.log("\n...still runnig with pid: " + process.pid);
+		main();
+	}, 20000);
+}
+
 function daemon(daemonized) {
 	process.on("SIGHUP", function() {
 		// deamon should never write to console, done just for example
@@ -147,14 +155,6 @@ function daemon(daemonized) {
 
 	// do daemon stuff
 	main();
-}
-
-function main() {
-	to = setTimeout(function() {
-		// deamon should never write to console, done just for example
-		console.log("\n...still runnig with pid: " + process.pid);
-		main();
-	}, 20000);
 }
 
 dc(daemon, "daemon.pid", {
