@@ -251,7 +251,7 @@ This package is written following  __Node.js 4.2__ specifications always taking 
 compatibility. The package it tested under
 [several Node.js versions](https://travis-ci.org/iccicci/daemon-control).
 
-__Note:__ required __Node.js 0.11__.
+__Note:__ required __Node.js 4.0__.
 
 __Note:__ tested only under __UNIX__.
 
