@@ -39,7 +39,7 @@ DaemonControl.prototype._cmdline = function(callback) {
 	if(! (process.argv[2] in commands))
 		return callback();
 
-	if(process.argv[2] == "reload" && ! this.reload)
+	if(process.argv[2] === "reload" && ! this.reload)
 		return callback();
 
 	if(this.hooks.argv)
@@ -62,7 +62,7 @@ DaemonControl.prototype._help = function() {
 		self._write("stop      stops the daemon\n");
 		self._write("restart   stops than starts the daemon\n");
 		if(self.reload)
-		self._write("reload    makes daemon to reload configuration\n");
+		self._write("reload    makes daemon to reload configuration\n"); // eslint-disable-line indent
 	};
 
 	if(this.hooks.help)
@@ -114,7 +114,7 @@ DaemonControl.prototype._main = function() {
 		}
 
 		self.argv = argv;
-		eval("self._" + cmd + "();");
+		eval("self._" + cmd + "();"); // eslint-disable-line no-eval
 	});
 };
 
@@ -234,7 +234,7 @@ DaemonControl.prototype._status = function(callback) {
 				}
 
 				if(callback)
-					callback(pid);
+					return callback(pid);
 			};
 
 			if(self.hooks.status)
@@ -250,13 +250,13 @@ DaemonControl.prototype._status = function(callback) {
 	};
 
 	fs.readFile(this.filename, function(err, data) {
-		if(err && err.code != "ENOENT")
+		if(err && err.code !== "ENOENT")
 			return self.emit("error", err);
 
 		if(err)
 			return done(null);
 
-		var pid = parseInt(data);
+		var pid = parseInt(data, 10);
 
 		if(isNaN(pid))
 			return done(null);
@@ -302,7 +302,7 @@ DaemonControl.prototype._stopped = function(callback) {
 			self._write("\nDaemon stopped\n");
 
 		if(callback)
-			callback();
+			return callback();
 	};
 
 	if(self.hooks.stop)
@@ -331,7 +331,7 @@ DaemonControl.prototype._wait = function(pid, callback, killed, count) {
 				return self._stopped(callback);
 			}
 
-			if(count == self.timeout && ! killed)
+			if(count === self.timeout && ! killed)
 				return self._kill(pid, callback);
 
 			self._wait(pid, callback, killed, count + 1);

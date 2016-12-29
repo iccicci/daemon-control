@@ -4,10 +4,10 @@
   "description": "Daemon control script with pidfile management utility",
   "scripts": {
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive test",
-    "jshint": "./node_modules/.bin/jshint *.js test",
-    "npmignore": "echo '.jshintrc\\n.gitignore\\n.travis.yml\\ntest\\nexample' > .npmignore ; cat .gitignore >> .npmignore",
+    "eslint": "./node_modules/.bin/eslint *.js test/*js",
+    "npmignore": "echo '.eslintrc\\n.gitignore\\n.travis.yml\\nexample\\ntest' > .npmignore ; cat .gitignore >> .npmignore",
     "t": "./node_modules/.bin/_mocha test",
-    "test": "npm run npmignore && npm run jshint && npm run coverage"
+    "test": "npm run npmignore && npm run eslint && npm run coverage"
   },
   "bugs": "https://github.com/iccicci/daemon-control/issues",
   "repository": "https://github.com/iccicci/daemon-control",
@@ -24,8 +24,8 @@
   "readmeFilename": "README.md",
   "dependencies": {},
   "devDependencies": {
+    "eslint": "3.12.2",
     "istanbul": "0.4.5",
-    "jshint": "2.9.4",
     "mocha": "3.2.0",
     "mocha-istanbul": "0.3.0"
   }

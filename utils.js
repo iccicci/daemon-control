@@ -29,19 +29,19 @@ function _init() {
 	if(! this.daemon)
 		throw new Error("DaemonControl: missing daemon parameter");
 
-	if("function" != typeof this.daemon)
+	if("function" !== typeof this.daemon)
 		throw new Error("DaemonControl: daemon parameter is not a function");
 
 	if(! this.filename)
 		throw new Error("DaemonControl: missing filename parameter");
 
-	if("string" != typeof this.filename)
+	if("string" !== typeof this.filename)
 		throw new Error("DaemonControl: filename parameter is not a string");
 
-	if("undefined" == typeof this.options)
+	if("undefined" === typeof this.options)
 		this.options = {};
 	else
-		if("object" != typeof this.options)
+		if("object" !== typeof this.options)
 			throw new Error("DaemonControl: options parameter is not an object");
 
 	this._init_options();
@@ -56,7 +56,7 @@ function _init_options() {
 		this.hooks = this.options.hooks;
 		delete this.options.hooks;
 
-		if("object" != typeof this.hooks)
+		if("object" !== typeof this.hooks)
 			throw new Error("DaemonControl: options.hooks is not an object");
 	}
 
@@ -64,7 +64,7 @@ function _init_options() {
 		if(! (i in hooks))
 			throw new Error("DaemonControl: unknow hook options.hooks." + i);
 
-		if("function" != typeof this.hooks[i])
+		if("function" !== typeof this.hooks[i])
 			throw new Error("DaemonControl: options.hooks." + i + " is not a function");
 	}
 
@@ -74,7 +74,7 @@ function _init_options() {
 	}
 
 	if("timeout" in this.options) {
-		this.timeout = parseInt(this.options.timeout);
+		this.timeout = parseInt(this.options.timeout, 10);
 		delete this.options.timeout;
 
 		if(isNaN(this.timeout))
@@ -95,7 +95,7 @@ function _init_spawn() {
 	if(! ("cwd" in this.options))
 		this.options.cwd = process.cwd();
 	else
-		if("string" != typeof this.options.cwd)
+		if("string" !== typeof this.options.cwd)
 			throw new Error("DaemonControl: cwd option is not a string");
 
 	if(! ("env" in this.options)) {
@@ -105,7 +105,7 @@ function _init_spawn() {
 			this.options.env[i] = process.env[i];
 	}
 	else
-		if("object" != typeof this.options.env)
+		if("object" !== typeof this.options.env)
 			throw new Error("DaemonControl: env option is not an object");
 
 	if(! ("stdio" in this.options))

@@ -1,4 +1,4 @@
-/* jshint mocha: true */
+/* eslint-disable callback-return */
 "use strict";
 
 var assert   = require("assert");
@@ -225,7 +225,7 @@ describe("cmdline", function() {
 				self.dc._write = function(msg) {
 					self.dc.stdout.push(msg);
 
-					if(self.dc.stdout.length == 2)
+					if(self.dc.stdout.length === 2)
 						done();
 				};
 			});
@@ -270,7 +270,7 @@ describe("cmdline", function() {
 				self.dc._write = function(msg) {
 					self.dc.stdout.push(msg);
 
-					if(self.dc.stdout.length == 2)
+					if(self.dc.stdout.length === 2)
 						done();
 				};
 			});

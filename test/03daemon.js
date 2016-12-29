@@ -1,4 +1,4 @@
-/* jshint mocha: true */
+/* eslint-disable callback-return */
 "use strict";
 
 var assert   = require("assert");
