@@ -136,7 +136,7 @@ function daemon(daemonized) {
 		console.log("\n  configuration reloaded");
 	});
 
-	if(process.argv[2] == "-i")
+	if(process.argv[2] === "-i")
 		process.on("SIGTERM", function() {});
 
 	if(process.env.recover) {
