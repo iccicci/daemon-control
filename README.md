@@ -1,13 +1,16 @@
 # daemon-control
 
 [![Build Status](https://travis-ci.org/iccicci/daemon-control.png)](https://travis-ci.org/iccicci/daemon-control)
-[![Code Climate](https://codeclimate.com/github/iccicci/daemon-control/badges/gpa.svg)](https://codeclimate.com/github/iccicci/daemon-control)
-[![Test Coverage](https://codeclimate.com/github/iccicci/daemon-control/badges/coverage.svg)](https://codeclimate.com/github/iccicci/daemon-control/coverage)
+[![Code Climate](https://codeclimate.com/github/iccicci/daemon-control/badges/gpa.svg)]
+https://codeclimate.com/github/iccicci/daemon-control)
+[![Test Coverage](https://codeclimate.com/github/iccicci/daemon-control/badges/coverage.svg)]
+(https://codeclimate.com/github/iccicci/daemon-control/coverage)
 [![Donate](http://img.shields.io/bitcoin/donate.png?color=blue)](https://www.coinbase.com/cicci)
 
 [![NPM version](https://badge.fury.io/js/daemon-control.svg)](https://www.npmjs.com/package/daemon-control)
 [![dependency status](https://david-dm.org/iccicci/daemon-control.svg)](https://david-dm.org/iccicci/daemon-control)
-[![dev dependency status](https://david-dm.org/iccicci/daemon-control/dev-status.svg)](https://david-dm.org/iccicci/daemon-control?type=dev)
+[![dev dependency status](https://david-dm.org/iccicci/daemon-control/dev-status.svg)]
+(https://david-dm.org/iccicci/daemon-control?type=dev)
 
 This package offers an easy and quick to use tool to manage the _control script_ for a __daemon__ as
 well a lot of ways to deeply configure _control script_ behaviour for each step.
@@ -46,7 +49,7 @@ Returns __DaemonControl__ _constructor_.
 
 ## Class: DaemonControl
 
-Extends [events.EventEmitter](https://nodejs.org/api/events.html#events_class_events_eventemitter).
+Extends [events.EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter).
 It manages the steps to control the __daemon__.
 
 ### Events
@@ -84,8 +87,8 @@ The path of the _pidfile_.
 * timeout: {Integer} (default: __5__) Specifies __SIGKILL__ timeout.
 * stdio: {Array|String} (default: __'ignore'__) Proxied to __child_process.spawn__.
 
-If any other __option__ is present, it is proxied to
-[child_process.spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
+If any other __option__ is present, it is proxied to [child_process.spawn]
+https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
 
 ##### hooks:
 
@@ -165,8 +168,8 @@ Called after __daemon__ is stopped.
 #### starting(done, options)
 
 * done(verbose, options): {Function}
-* options: {Object} the __options__ _Object_ prepared to call
-[child_process.spawn](https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
+* options: {Object} the __options__ _Object_ prepared to call [child_process.spawn]
+(https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
 
 Called before __daemon__ launch attempt. This is the latest occasion to customize the __options__ _Object_ (if this is
 required) before passing it to __done__ _Function_.
@@ -201,8 +204,8 @@ console.
 
 * done(verbose): {Function}
 
-Called once per second while waiting for __deamon__ to exit after a __SIGTERM__ have been sent to it. Useull to customize
-the output to console of one dot per second.
+Called once per second while waiting for __deamon__ to exit after a __SIGTERM__ have been sent to it. Usefull to
+customize the output to console of one dot per second.
 
 ## Command line parameters
 
