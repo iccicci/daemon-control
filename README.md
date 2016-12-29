@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/iccicci/daemon-control.png)](https://travis-ci.org/iccicci/daemon-control)
 [![Code Climate](https://codeclimate.com/github/iccicci/daemon-control/badges/gpa.svg)]
-https://codeclimate.com/github/iccicci/daemon-control)
+(https://codeclimate.com/github/iccicci/daemon-control)
 [![Test Coverage](https://codeclimate.com/github/iccicci/daemon-control/badges/coverage.svg)]
 (https://codeclimate.com/github/iccicci/daemon-control/coverage)
 [![Donate](http://img.shields.io/bitcoin/donate.png?color=blue)](https://www.coinbase.com/cicci)
@@ -88,7 +88,7 @@ The path of the _pidfile_.
 * stdio: {Array|String} (default: __'ignore'__) Proxied to __child_process.spawn__.
 
 If any other __option__ is present, it is proxied to [child_process.spawn]
-https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
+(https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options).
 
 ##### hooks:
 
@@ -240,7 +240,7 @@ The _help message_ is printed to console.
 
 ### reload
 
-A __status__ check is performed, if the __daemon__ is running the pakage send it a __SIGHUP__.
+A __status__ check is performed, if the __daemon__ is running the pakage sends it a __SIGHUP__.
 If __reload option__ was __false__ when _constructor_ was called, this command is not enabled and it cause a
 _syntax error_.
 
