@@ -34,7 +34,7 @@ A complete example can be found in
 
 With [npm](https://www.npmjs.com/package/daemon-control):
 ```sh
-npm install daemon-control
+ $ npm install --save daemon-control
 ```
 
 # API
@@ -61,14 +61,15 @@ Emitted when an error occurr.
 
 ### [new] DaemonControl(daemon, filename[, options])
 
-Returns a new __DaemonControl__ to control the daemon, parses _command line arguments_ and try to act as
+Returns a new __DaemonControl__ _object_ to control the daemon, parses _command line arguments_ and tries to act as
 requested by _command line_.
 
 #### daemon(daemonized) {Function}
 
-* daemonized: {Boolean} __true__ if lunched as a __daemon__ or __false__ if launched with __nodaemon__ command.
+* daemonized: {Boolean} __true__ if lunched as a __daemon__ or __false__ if launched with __nodaemon__ command line
+option.
 
-The daemon entry point.
+The _daemon entry point_.
 
 #### filename {String}
 
@@ -251,7 +252,7 @@ This package is written following  __Node.js 4.2__ specifications always taking 
 compatibility. The package it tested under
 [several Node.js versions](https://travis-ci.org/iccicci/daemon-control).
 
-__Note:__ required __Node.js 4.0__.
+__Note:__ required __Node.js 0.11__.
 
 __Note:__ tested only under __UNIX__.
 
