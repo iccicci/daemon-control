@@ -1,6 +1,6 @@
 {
   "name": "daemon-control",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Daemon control script with pidfile management utility",
   "scripts": {
     "all": "npm run npmignore && npm run eslint && npm run coverage",
@@ -11,8 +11,14 @@
   },
   "bugs": "https://github.com/iccicci/daemon-control/issues",
   "repository": "https://github.com/iccicci/daemon-control",
-  "keywords": [ "daemon", "pid", "pidfile" ],
-  "engines": { "node": ">=0.11" },
+  "keywords": [
+    "daemon",
+    "pid",
+    "pidfile"
+  ],
+  "engines": {
+    "node": ">=0.11"
+  },
   "author": "Daniele Ricci <daniele.icc@gmail.com> (https://github.com/iccicci)",
   "license": "MIT",
   "readmeFilename": "README.md",
