@@ -3,6 +3,14 @@ sudo: false
 language: node_js
 
 node_js:
+  - "6.9"
+  - "6.8"
+  - "6.7"
+  - "6.6"
+  - "6.5"
+  - "6.4"
+  - "6.3"
+  - "6.2"
   - "6.1"
   - "6.0"
   - "5.11"
@@ -22,14 +30,12 @@ node_js:
   - "4.2"
   - "4.1"
   - "4.0"
+  - "0.12"
+  - "0.11"
 
 addons:
   code_climate:
     repo_token: 3cdde9b8d06b7f0be9658c00e71e16218cf21279c007806f111e6add1956b450
 
-before_script:
-  - node sleep.js
-
 after_script:
-  - npm install codeclimate-test-reporter
-  - codeclimate-test-reporter < coverage/lcov.info
+  - if [[ `node --version` =~ ^v6.9 ]] ; then npm run coverage ; npm install codeclimate-test-reporter ; codeclimate-test-reporter < coverage/lcov.info ; fi
